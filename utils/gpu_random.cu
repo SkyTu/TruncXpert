@@ -43,23 +43,22 @@
 
 // using data_type = u32;
 // cudaStream_t stream = NULL;
-curandGenerator_t gpuGen[2];
-curandGenerator_t cpuGen[2];
+curandGenerator_t gpuGen[8];
+curandGenerator_t cpuGen[8];
 curandRngType_t rng = CURAND_RNG_PSEUDO_XORWOW;
 curandOrdering_t order = CURAND_ORDERING_PSEUDO_BEST;
+extern int global_device;
 
 void randomUIntsOnGpu(const u64 n, u32 *d_data)
 {
-  int device;
-  checkCudaErrors(cudaGetDevice(&device));
-  CURAND_CHECK(curandGenerate(gpuGen[device], d_data, n));
+  checkCudaErrors(cudaSetDevice(global_device));
+  CURAND_CHECK(curandGenerate(gpuGen[global_device], d_data, n));
 }
 
 void randomUIntsOnCpu(const u64 n, u32 *h_data)
 {
-  int device;
-  checkCudaErrors(cudaGetDevice(&device));
-  CURAND_CHECK(curandGenerate(cpuGen[device], h_data, n));
+  checkCudaErrors(cudaSetDevice(global_device));
+  CURAND_CHECK(curandGenerate(cpuGen[global_device], h_data, n));
 }
 
 template <typename T>
@@ -77,6 +76,7 @@ T *randomGEOnGpu(const u64 n, int bw)
 template <typename T>
 T *randomGEOnGpuWithGap(const u64 n, int bw, int gap)
 {
+  checkCudaErrors(cudaSetDevice(global_device));
   u64 numUInts = (n * sizeof(T) - 1) / (sizeof(u32)) + 1;
   auto d_data = (u32 *)gpuMalloc(numUInts * sizeof(u32));
   randomUIntsOnGpu(/*2 * n*/ numUInts, /*(u32*)*/ d_data);
@@ -91,6 +91,7 @@ T *randomGEOnGpuWithGap(const u64 n, int bw, int gap)
 template <typename T>
 void randomGEOnCpu(const u64 n, int bw, T *h_data)
 {
+  checkCudaErrors(cudaSetDevice(global_device));
   u64 numUInts = (n * sizeof(T)) / (sizeof(u32));
   assert((n * sizeof(T)) % sizeof(u32) == 0);
   randomUIntsOnCpu(numUInts, (u32 *)h_data);
@@ -107,6 +108,7 @@ template <typename T>
 T *randomGEOnCpu(const u64 n, int bw)
 {
   // printf("n=%lu\n", n);
+  checkCudaErrors(cudaSetDevice(global_device));
   auto h_data = (T *)cpuMalloc(n * sizeof(T));
   randomGEOnCpu(n, bw, h_data);
   return h_data;
@@ -114,6 +116,7 @@ T *randomGEOnCpu(const u64 n, int bw)
 
 AESBlock *randomAESBlockOnGpu(const int n)
 {
+  checkCudaErrors(cudaSetDevice(global_device));
   AESBlock *d_data = (AESBlock *)gpuMalloc(n * sizeof(AESBlock));
   randomUIntsOnGpu(4 * n, (u32 *)d_data);
   return d_data;
@@ -123,12 +126,11 @@ void initGPURandomness()
 {
   const unsigned long long offset = 0ULL;
   const unsigned long long seed = 12345ULL;
-  int device;
-  checkCudaErrors(cudaGetDevice(&device));
-  CURAND_CHECK(curandCreateGenerator(&(gpuGen[device]), CURAND_RNG_PSEUDO_XORWOW));
-  CURAND_CHECK(curandSetGeneratorOffset(gpuGen[device], offset));
-  CURAND_CHECK(curandSetGeneratorOrdering(gpuGen[device], order));
-  CURAND_CHECK(curandSetPseudoRandomGeneratorSeed(gpuGen[device], seed));
+  checkCudaErrors(cudaSetDevice(global_device));
+  CURAND_CHECK(curandCreateGenerator(&(gpuGen[global_device]), CURAND_RNG_PSEUDO_XORWOW));
+  CURAND_CHECK(curandSetGeneratorOffset(gpuGen[global_device], offset));
+  CURAND_CHECK(curandSetGeneratorOrdering(gpuGen[global_device], order));
+  CURAND_CHECK(curandSetPseudoRandomGeneratorSeed(gpuGen[global_device], seed));
 }
 
 void initCPURandomness()
@@ -136,33 +138,32 @@ void initCPURandomness()
   const unsigned long long offset = 0ULL;
   const unsigned long long seed = 1234567890ULL;
   int device;
-  checkCudaErrors(cudaGetDevice(&device));
+  checkCudaErrors(cudaSetDevice(global_device));
   printf("CPU randomness, seed: %llu, offset: %llu\n", seed, offset);
-  CURAND_CHECK(curandCreateGeneratorHost(&(cpuGen[device]), CURAND_RNG_PSEUDO_XORWOW));
-  CURAND_CHECK(curandSetGeneratorOffset(cpuGen[device], offset));
-  CURAND_CHECK(curandSetGeneratorOrdering(cpuGen[device], order));
-  CURAND_CHECK(curandSetPseudoRandomGeneratorSeed(cpuGen[device], seed));
+  CURAND_CHECK(curandCreateGeneratorHost(&(cpuGen[global_device]), CURAND_RNG_PSEUDO_XORWOW));
+  CURAND_CHECK(curandSetGeneratorOffset(cpuGen[global_device], offset));
+  CURAND_CHECK(curandSetGeneratorOrdering(cpuGen[global_device], order));
+  CURAND_CHECK(curandSetPseudoRandomGeneratorSeed(cpuGen[global_device], seed));
 }
 
 void destroyGPURandomness()
 {
-  int device;
-  checkCudaErrors(cudaGetDevice(&device));
-  CURAND_CHECK(curandDestroyGenerator(gpuGen[device]));
+  checkCudaErrors(cudaSetDevice(global_device));
+  CURAND_CHECK(curandDestroyGenerator(gpuGen[global_device]));
   // CUDA_CHECK(cudaDeviceReset());
 }
 
 void destroyCPURandomness()
 {
-  int device;
-  checkCudaErrors(cudaGetDevice(&device));
-  CURAND_CHECK(curandDestroyGenerator(cpuGen[device]));
+  checkCudaErrors(cudaSetDevice(global_device));
+  CURAND_CHECK(curandDestroyGenerator(cpuGen[global_device]));
   // CUDA_CHECK(cudaDeviceReset());
 }
 
 template <typename TIn, typename TOut>
 void writeShares(u8 **key_as_bytes, int party, u64 N, TIn *d_A, int bw, bool randomShares)
 {
+  checkCudaErrors(cudaSetDevice(global_device));
   assert(bw <= 8 * sizeof(TOut));
   TOut *d_A0 = NULL;
   if (randomShares)
@@ -192,6 +193,7 @@ void writeShares(u8 **key_as_bytes, int party, u64 N, TIn *d_A, int bw, bool ran
 template <typename T>
 T *getMaskedInputOnGpu(int N, int bw, T *d_mask_I, T **h_I, bool smallInputs, int smallBw)
 {
+  checkCudaErrors(cudaSetDevice(global_device));
   size_t memSzI = N * sizeof(T);
   // int smallBw = 38; //15;
   // printf("small inputs=%d\n", smallInputs);
@@ -212,6 +214,7 @@ T *getMaskedInputOnGpu(int N, int bw, T *d_mask_I, T **h_I, bool smallInputs, in
 template <typename T>
 T *getMaskedInputOnCpu(int N, int bw, T *h_mask_I, T **h_I, bool smallInputs, int smallBw)
 {
+  checkCudaErrors(cudaSetDevice(global_device));
   size_t memSzI = N * sizeof(T);
   auto d_mask_I = (T *)moveToGPU((u8 *)h_mask_I, memSzI, NULL);
   auto d_masked_I = getMaskedInputOnGpu<T>(N, bw, d_mask_I, h_I, smallInputs, smallBw);

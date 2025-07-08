@@ -57,6 +57,7 @@ u64 *gpuGenSoftmaxKey(int batchSz, int numClasses, u64 *d_mask_I, bool secfloat,
         pirhana_softmax(inpMask, softmaxOpMask, dcf::orca::global::scale);
     }
     d_mask_I = (u64 *)moveToGPU((u8 *)softmaxOpMask.data, memSz, NULL);
+    std::cout << "memSz (bytes) is " << memSz << std::endl;
     return d_mask_I;
 }
 
@@ -89,6 +90,75 @@ void writeKeySz(std::string dir, std::string modelName, u64 keySz)
     std::ofstream keySzFile(dir + modelName + ".txt");
     keySzFile << keySz;
     keySzFile.close();
+}
+
+void dealerE2EFakeOffline(std::string modelName, int party, int epochs, int blocks, int blockSz, int batchSz, int H, int W, int C, bool secfloat, bool momentum, std::string keyDir, int sleepInt, std::string weightsMask = "")
+{
+    AESGlobalContext g;
+    initAESContext(&g);
+    initGPURandomness();
+    initGPUMemPool();
+    sytorch_init();
+    // assert(epochs < 6);
+
+    auto expName = modelName + "-" + std::to_string(epochs) + "e-" + std::to_string(blocks) + "b";
+    auto trainingDir = "output/P" + std::to_string(party) + "/training/";
+    auto lossDir = trainingDir + "loss/" + expName + "/";
+    auto keySzDir = trainingDir + "keysize/";
+    auto weightsDir = lossDir + "weights/";
+
+    // assumes output/P0/training exists
+    makeDir(trainingDir + "loss/");
+    makeDir(lossDir);
+    makeDir(weightsDir);
+    makeDir(keySzDir);
+
+    char one = 1;
+    char two = 2;
+
+    std::cout << "before getGPUModel" << std::endl;
+
+    // load the model
+    dcf::orca::GPUModel<u64> *m = getGPUModel<u64>(modelName, Tensor<u64>(nullptr, {(u64)batchSz, (u64)H, (u64)W, (u64)C}));
+    std::cout << "after getGPUModel" << std::endl;
+    m->setTrain(momentum);
+    m->initWeights(weightsMask, false);
+
+    char *zeros;
+    size_t padding, bufSize = 8 * OneGB;
+    u8 *startPtr, *curPtr, *tmpPtr1, *tmpPtr2;
+    getAlignedBuf(&startPtr, bufSize);
+
+    // initialize llama
+    LlamaConfig::party = DEALER;
+    auto llama = new LlamaBase<u64>();
+    tmpPtr1 = (u8 *)malloc(OneGB);
+    bool isServer = party + 2 == SERVER;
+    llama->initDealer((char **)(isServer ? &curPtr : &tmpPtr2), (char **)(isServer ? &tmpPtr2 : &curPtr));
+    LlamaConfig::bitlength = dcf::orca::global::bw;
+    std::string keyFile = keyDir + modelName + "_training_key" + std::to_string(party);
+    int fd = openForWriting(keyFile + "_" + to_string(0) + "_" + to_string(0) + "_" + std::to_string(0) + ".dat");
+    for(int i = 0; i < blockSz; i++){
+        curPtr = startPtr;
+        tmpPtr2 = tmpPtr1;
+        genModelKey(m, &curPtr, party, &g, secfloat, (LlamaBase<u64> *)llama, 0);
+        if(i == 0){
+            size_t keySz = curPtr - startPtr;
+            padding = 4096 - (keySz % 4096);
+            keySz += padding;
+            zeros = new char[padding];
+            memset(zeros, 0, padding);
+            writeKeySz(keySzDir, modelName, keySz);
+        }
+        memcpy(curPtr, zeros, padding);
+        curPtr += padding;
+        writeKeyBuf(fd, curPtr - startPtr, startPtr);
+    }
+    m->dumpWeights(weightsDir + "weights_mask_" + std::to_string(party) + "_" + to_string(0) + "_" + to_string(0) + "_" + std::to_string(0) + ".dat");
+    m->dumpOptimizerMask(weightsDir + "optimizer_mask_" + std::to_string(party) + "_" + to_string(0) + "_" + to_string(0) + "_" + std::to_string(0) + ".dat", party);
+    close(fd);
+    delete[] zeros;
+    destroyGPURandomness();
 }
 
 void dealerE2E(std::string modelName, int party, int epochs, int blocks, int blockSz, int batchSz, int H, int W, int C, bool secfloat, bool momentum, std::string keyDir, int sleepInt, std::string weightsMask = "", bool fake_offline = true)
@@ -134,16 +204,16 @@ void dealerE2E(std::string modelName, int party, int epochs, int blocks, int blo
     tmpPtr1 = (u8 *)malloc(OneGB);
     bool isServer = party + 2 == SERVER;
     llama->initDealer((char **)(isServer ? &curPtr : &tmpPtr2), (char **)(isServer ? &tmpPtr2 : &curPtr));
-    
+    LlamaConfig::bitlength = dcf::orca::global::bw;
     std::string keyFile = keyDir + modelName + "_training_key" + std::to_string(party);
     int fd = openForWriting(keyFile + "_" + to_string(0) + "_" + to_string(0) + "_" + std::to_string(0) + ".dat");
     for (int l = 0; l < epochs; l++)
     {
         for (int k = 0; k < blocks; k++)
         {
-            printf("Iteration=%u\n", l * blocks * blockSz + k * blockSz);
             for (int j = 0; j < blockSz; j++)
             {
+                printf("Iteration=%u\n", l * blocks * blockSz + k * blockSz + j);
                 curPtr = startPtr;
                 tmpPtr2 = tmpPtr1;
                 genModelKey(m, &curPtr, party, &g, secfloat, (LlamaBase<u64> *)llama, l);
@@ -226,31 +296,52 @@ void dealerPerf(std::string modelName, int party, int iterations, int batchSz, i
     destroyGPURandomness();
 }
 
+int global_device = 0;
+
 int main(int argc, char *argv[])
 {
     int party = atoi(argv[1]);
     auto keyDir = std::string(argv[2]);
     auto experiment = std::string(argv[3]);
+    global_device = atoi(argv[4]);
 
     omp_set_num_threads(32);
-    if (experiment.compare("CNN2") == 0){
-        int epochs = 1;
+    if (experiment.compare("CNN2-FLOAT") == 0){
+        int epochs = 2;
         int blocks = 46;
         int blockSz = 10;
         int batchSz = 128;
-        dealerE2E("CNN2", party, epochs, blocks, blockSz, batchSz, 28, 28, 1, true, true, keyDir, 300, "", true);
+        dealerE2EFakeOffline("CNN2", party, epochs, blocks, blockSz, batchSz, 28, 28, 1, true, true, keyDir, 300, "");
     }
-    else if (experiment.compare("CNN3") == 0){
+    else if (experiment.compare("CNN3-FLOAT") == 0){
         int epochs = 2;
-        int blocks = 39;
+        int blocks = 78;
+        int blockSz = 10;
+        int batchSz = 64;
+        dealerE2EFakeOffline("CNN3", party, epochs, blocks, blockSz, batchSz, 32, 32, 3, true, true, keyDir, 300, "");
+    }
+    else if (experiment.compare("P-SecureML-FLOAT") == 0)
+    {
+        int epochs = 2;
+        int blocks = 46;
         int blockSz = 10;
         int batchSz = 128;
-        dealerE2E("CNN3", party, epochs, blocks, blockSz, batchSz, 28, 28, 1, true, true, keyDir, 300, "", true);
+        dealerE2EFakeOffline("P-SecureML", party, epochs, blocks, blockSz, batchSz, 28, 28, 1, true, true, keyDir, 300, "");   
+    }
+    if (experiment.compare("CNN2-COMM") == 0){
+        int iterations = 11;
+        int batchSz = 128;
+        dealerPerf("CNN2", party, iterations, batchSz, 28, 28, 1, true, true, keyDir, 300);
+    }
+    else if (experiment.compare("CNN3-COMM") == 0){
+        int iterations = 11;
+        int batchSz =64;
+        dealerPerf("CNN3", party, iterations, batchSz, 32, 32, 3, true, true, keyDir, 300);
     }
     else if (experiment.compare("P-VGG16") == 0)
     {
-        int iterations = 11;
-        int batchSz = 4;
+        int iterations = 2;
+        int batchSz = 128;
         dealerPerf("P-VGG16", party, iterations, batchSz, 32, 32, 3, true, true, keyDir, 300);
     }
     else if (experiment.compare("P-AlexNet") == 0)
@@ -276,6 +367,20 @@ int main(int argc, char *argv[])
         int iterations = 11;
         int batchSz = 128;
         dealerPerf("AlexNet", party, iterations, batchSz, 32, 32, 3, true, true, keyDir, 300);
+    }
+    else if (experiment.compare("Pattern1") == 0)
+    {
+        int iterations = 11;
+        int batchSz = 128;
+        // 这里设置float softmax是为了更好的减去通信开销，计算pattern
+        dealerPerf("Pattern1", party, iterations, batchSz, 28, 28, 1, true, true, keyDir, 300);
+    }
+    else if (experiment.compare("Pattern2") == 0)
+    {
+        int iterations = 11;
+        int batchSz = 128;
+        // 这里设置float softmax是为了更好的减去通信开销，计算pattern
+        dealerPerf("Pattern2", party, iterations, batchSz, 28, 28, 1, true, true, keyDir, 300);
     }
     return 0;
 }

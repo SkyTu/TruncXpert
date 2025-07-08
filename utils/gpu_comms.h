@@ -72,6 +72,23 @@ __global__ void expandKernel(int bw, int N, u8 *d_compressedA, T *d_A)
     }
 }
 
+template <typename T>
+__global__ void expandKernelDivisible(int bw, int N, u8 *d_compressedA, T* d_A) {
+    int BW_BYTES = bw / 8;
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < N) {
+        // 逐字节读取，拼成一个 uint64 值
+        uint64_t val = 0;
+        #pragma unroll
+        for (int j = 0; j < BW_BYTES; ++j) {
+            val |= (uint64_t)d_compressedA[i * BW_BYTES + j] << (8 * j);  // Little-endian
+        }
+        d_A[i] = val;
+    }
+}
+
+
+
 __global__ void addMod4(int numInts, u32 *A, u32 *B)
 {
     int j = blockIdx.x * blockDim.x + threadIdx.x;
@@ -113,7 +130,6 @@ private:
         }
         else
         {
-            // printf("Not compressing memory\n");
             assert(modBw == bw);
             memSz = 0;
             this->getMemSz<T>(bw, N, memSz, numInts);
@@ -138,7 +154,11 @@ private:
             // size in bytes
             memSz = size_t(N * sizeof(T));
             d_A = (T *)gpuMalloc(memSz);
-            expandKernel<<<(N - 1) / 128 + 1, 128>>>(bw, N, d_compressedA, (T *)d_A);
+            assert(bw <= 64);
+            if (bw % 8 == 0)
+                expandKernelDivisible<<<(N - 1) / 128 + 1, 128>>>(bw, N, d_compressedA, (T *)d_A);
+            else
+                expandKernel<<<(N - 1) / 128 + 1, 128>>>(bw, N, d_compressedA, (T *)d_A);
             checkCudaErrors(cudaDeviceSynchronize());
             gpuFree(d_compressedA);
         }

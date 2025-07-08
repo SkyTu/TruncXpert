@@ -51,11 +51,15 @@ using namespace LlamaConfig;
 SocketBuf::SocketBuf(std::string ip, int port, bool onlyRecv = false)
 {
     this->t = BUF_SOCKET;
+    
     std::cerr << "trying to connect with server...";
+    std::cerr << "ip is " << ip;
+    ip = "127.0.0.1";
     {
         struct sockaddr_in addr;
         addr.sin_family = AF_INET;
         addr.sin_port = htons(port);
+        std::cerr << "port is " << port << " onlyRecv is " << onlyRecv;
         addr.sin_addr.s_addr = inet_addr(ip.c_str());
         while (1)
         {
@@ -80,6 +84,7 @@ SocketBuf::SocketBuf(std::string ip, int port, bool onlyRecv = false)
     {
         struct sockaddr_in addr;
         addr.sin_family = AF_INET;
+        std::cerr << "not only recv, send port is " << port + 3;
         addr.sin_port = htons(port + 3);
         addr.sin_addr.s_addr = inet_addr(ip.c_str());
         while (1)
@@ -155,6 +160,7 @@ Peer *waitForPeer(int port)
         memset(&serv, 0, sizeof(serv));
         serv.sin_family = AF_INET;
         serv.sin_addr.s_addr = htonl(INADDR_ANY); /* set our address to any interface */
+        std::cout << "port is " << port << std::endl;
         serv.sin_port = htons(port);              /* set the server port number */
         int mysocket = socket(AF_INET, SOCK_STREAM, 0);
         int reuse = 1;
@@ -183,6 +189,7 @@ Peer *waitForPeer(int port)
         memset(&serv, 0, sizeof(serv));
         serv.sin_family = AF_INET;
         serv.sin_addr.s_addr = htonl(INADDR_ANY); /* set our address to any interface */
+        std::cout << "port is " << port + 3 << std::endl;
         serv.sin_port = htons(port + 3);          /* set the server port number */
         int mysocket = socket(AF_INET, SOCK_STREAM, 0);
         int reuse = 1;

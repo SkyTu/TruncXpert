@@ -336,12 +336,40 @@ namespace dcf
         }
 
         template <typename T>
-        void FCLayer<T>::printWeights()
+        void FCLayer<T>::dumpOptimizer(std::ofstream &f, int party)
         {
-            printf("Print weights in fc_layer.cu\n");
-            for(int i = 0; i < 100; i++)
-                printf("W[%d] is %lu\n", i, ((T*)W)[i]);
+            f.write((char *)Vw, p.size_B * sizeof(T));
+            if (useBias)
+                f.write((char *)Vy,  p.N * sizeof(T));
         }
 
+        template <typename T>
+        void FCLayer<T>::dumpOptimizerMask(std::ofstream &f, int party)
+        {
+            if (party == 1){
+                f.write((char *)mask_Vw, p.size_B * sizeof(T));
+            }
+            else{
+                memset(mask_Vw, 0, p.size_B * sizeof(T));
+                f.write((char *)mask_Vw, p.size_B * sizeof(T));
+            }
+            if (useBias){
+                f.write((char *)mask_Vy, p.N * sizeof(T));
+            }
+        }
+
+        // Vy是revealed的， Vw不是，所以这里要区分开来
+        template <typename T>
+        void FCLayer<T>::initOptimizer(u8 **weights, int party)
+        {
+            size_t memSzW = p.size_B * sizeof(T);
+            memcpy(Vw, *weights, memSzW);
+            *weights += memSzW;
+            if (useBias)
+            {
+                memcpy(Vy, *weights, p.N * sizeof(T));
+                *weights += (p.N * sizeof(T));
+            }
+        }
     }
 }

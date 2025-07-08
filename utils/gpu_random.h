@@ -20,7 +20,7 @@
 // SOFTWARE.
 
 #pragma once
-
+#include "device.h"
 #include "gpu_data_types.h"
 #include <curand.h>
 

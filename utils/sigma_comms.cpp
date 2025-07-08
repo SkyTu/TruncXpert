@@ -30,7 +30,7 @@
 #include <chrono>
 #include <sys/socket.h>
 #include <future>
-
+#pragma once
 size_t OneGB = 1024 * 1024 * 1024;
 
 SigmaPeer::SigmaPeer(bool pinMem, bool compress) : compress(compress), sendThread{}, mtx{}, cv{}

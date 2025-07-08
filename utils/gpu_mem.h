@@ -24,6 +24,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include "gpu_stats.h"
+#include "device.h"
 // #include <sys/types.h>
 // extern cudaMemPool_t mempool;
 

@@ -24,50 +24,41 @@
 
 namespace wing
 {
+
     template <typename T>
-    __global__ void genSelectExtKernel(T* inputMask, T* outputMask, T* rm, u8* rd, T* rmd, T* rmu, T* m, T* ud, T* v, T* w, T* z, int bin, int bout, int N){
+    __global__ void genSelectExtKernel(T* inputMask, T* outputMask, u8* rs, T* re, T* v, T* p, T* q, int bin, int bout, int N){
         int i = blockIdx.x * blockDim.x + threadIdx.x;
         if(i < N){
-            m[i] = (1ULL << bin) * (gpuMsb(inputMask[i], bin)) + rm[i];
-            ud[i] = rd[i] ^ 1;
-            assert(ud[i] == 0 || ud[i] == 1);
-            v[i] = ud[i] * inputMask[i] + outputMask[i];
-            w[i] = ud[i] * (rm[i] + inputMask[i]) + outputMask[i];
-            z[i] = 2 * ud[i] * (rm[i] + inputMask[i]);
-            rmd[i] = rm[i] * rd[i];
-            rmu[i] = rm[i] * ud[i];
+            assert(rs[i] == 0 || rs[i] == 1);
+            auto rmsb = gpuMsb(inputMask[i], bin);
+            v[i] = (1 - rs[i]) * inputMask[i] - outputMask[i];
+            gpuMod(v[i], bout);
+            p[i] = rs[i] * rmsb;
+            q[i] = (1 - rs[i]) * rmsb;
+            re[i] = inputMask[i] - outputMask[i] - outputMask[i];
+            gpuMod(re[i], bout);
         }
     }
 
     template <typename T>
-    T* gpuKeyGenSelectExt(uint8_t** key_as_bytes, int party, int bin, int bout, int N, u8* rd, T* inputMask){
-        auto rm = randomGEOnGpu<T>(N, bout);
+    T* gpuKeyGenSelectExt(uint8_t** key_as_bytes, int party, int bin, int bout, int N, u8* rs, T* inputMask){
         auto outputMask = randomGEOnGpu<T>(N, bout);
-        T* m = (T*)gpuMalloc(N * sizeof(T));
-        T* ud = (T*)gpuMalloc(N * sizeof(T));
+        T* re = (T*)gpuMalloc(N * sizeof(T));
         T* v = (T*)gpuMalloc(N * sizeof(T));
-        T* w = (T*)gpuMalloc(N * sizeof(T));
-        T* z = (T*)gpuMalloc(N * sizeof(T));
-        T* rmd = (T*)gpuMalloc(N * sizeof(T));
-        T* rmu = (T*)gpuMalloc(N * sizeof(T));
-        genSelectExtKernel<<<(N - 1) / 256 + 1, 256>>>(inputMask, outputMask, rm, rd, rmd, rmu, m, ud, v, w, z, bin, bout, N);
-        writeShares<T, T>(key_as_bytes, party, N, rm, bout);
-        writeShares<T, T>(key_as_bytes, party, N, rmd, bout);
-        writeShares<T, T>(key_as_bytes, party, N, rmu, bout);
-        writeShares<T, T>(key_as_bytes, party, N, ud, bout);
-        writeReconstructed<T>(key_as_bytes, m, N);
+        T* p = (T*)gpuMalloc(N * sizeof(T));
+        T* q = (T*)gpuMalloc(N * sizeof(T));
+        
+        genSelectExtKernel<<<(N - 1) / 256 + 1, 256>>>(inputMask, outputMask, rs, re, v, p, q, bin, bout, N);
+        writeShares<T, T>(key_as_bytes, party, N, re, bout);
+        writeShares<u8, T>(key_as_bytes, party, N, rs, bout);
         writeShares<T, T>(key_as_bytes, party, N, v, bout);
-        writeShares<T, T>(key_as_bytes, party, N, w, bout);
-        writeShares<T, T>(key_as_bytes, party, N, z, bout);
-        writeShares<T, T>(key_as_bytes, party, N, inputMask, bout);
-        gpuFree(rm);
-        gpuFree(m);
-        gpuFree(ud);
+        writeShares<T, T>(key_as_bytes, party, N, p, bout);
+        writeShares<T, T>(key_as_bytes, party, N, q, bout);
+        
+        gpuFree(inputMask);
         gpuFree(v);
-        gpuFree(w);
-        gpuFree(z);
-        gpuFree(rmd);
-        gpuFree(rmu);
+        gpuFree(p);
+        gpuFree(q);
         return outputMask;
     }
 
@@ -183,8 +174,14 @@ namespace wing
         writeInt(key_as_bytes, bin);
         writeInt(key_as_bytes, bout);
         writeInt(key_as_bytes, N);
+        auto cur_bytes = *key_as_bytes;
         auto d_dReluMask = dpf::gpuKeyGenDRelu(key_as_bytes, party, bin, N, d_inputMask, g);
+        int key_as_bytes_sz = *key_as_bytes - cur_bytes;
+        printf("DRelu Key size=%d\n", key_as_bytes_sz);
+        cur_bytes = *key_as_bytes;
         auto d_outputMask = gpuKeyGenSelectExt(key_as_bytes, party, bin, bout, N, d_dReluMask, d_inputMask);
+        key_as_bytes_sz = *key_as_bytes - cur_bytes;
+        printf("Select Key size=%d\n", key_as_bytes_sz);
         return std::make_pair(d_dReluMask, d_outputMask);
     }
 
@@ -222,57 +219,56 @@ namespace wing
     }
     
     template <typename T>
-    __global__ void ReluZeroExtMuxKernel(int party, int bin, int bout, int N, T* d_I, u32* d_dcf, T* d_rm, T* d_rmd, T* d_rmu, T* d_ud, T* d_m, T* d_v, T* d_w, T* d_z, T* d_rin, T* res)
+    __global__ void ReluZeroExtMuxKernel(int party, int bin, int bout, int N, T* d_I, u32* d_dcf, T* d_re, T* d_rs, T* d_v, T* d_p, T* d_q, T* res)
     {
         int i = blockIdx.x * blockDim.x + threadIdx.x;
         if (i < N)
         {
-            auto msb_x = gpuMsb(d_I[i], bin);
+            d_I[i] = d_I[i] + (1ULL << (bin - 2));
+            gpuMod(d_I[i], bin);
+            auto t = (1ULL - gpuMsb(d_I[i], bin)) * (1ULL << bin);
             int laneId = threadIdx.x & 0x1f;
             auto dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
-            auto that = d_m[i] * (1 ^ msb_x);
+            d_I[i] = d_I[i] - (1ULL << (bin - 2));
+            gpuMod(d_I[i], bout);
             assert(dhat == 0 || dhat == 1);
+            
             if(dhat){
-                res[i] = d_ud[i] * (that + d_I[i]) + d_w[i] - d_z[i] + msb_x * d_rmu[i];
+                res[i] = (T(party) - d_rs[i]) * d_I[i] + t * (d_q[i]) - d_v[i];
             }
             else{
-                res[i] = (party == SERVER1) * (that + d_I[i]) - d_ud[i] * (that + d_I[i]) + d_v[i] - d_rin[i] - (1 ^ msb_x) * d_rmd[i];
+                res[i] = d_rs[i] * d_I[i] + t * d_p[i] + d_v[i] - d_re[i];
             }
+            gpuMod(res[i], bout);
         }
     }
-    // 有必要开d_relu这个空间吗？
+
     template <typename T>
     T* gpuReluZeroExtMux(int party, int bin, int bout, int N, GPUSelectExtKey<T> k, T* d_I, u32* d_dcf, Stats *s){
         auto d_relu = (T*)gpuMalloc(N * sizeof(T));
-        auto d_rm = (T *)moveToGPU((uint8_t *)k.rm, N * sizeof(T), s);
-        auto d_rmd = (T *)moveToGPU((uint8_t *)k.rmd, N * sizeof(T), s);
-        auto d_rmu = (T *)moveToGPU((uint8_t *)k.rmu, N * sizeof(T), s);
-        auto d_ud = (T *)moveToGPU((uint8_t *)k.ud, N * sizeof(T), s);
-        auto d_m = (T *)moveToGPU((uint8_t *)k.m, N * sizeof(T), s);
+        auto d_re = (T *)moveToGPU((uint8_t *)k.re, N * sizeof(T), s);
+        auto d_rs = (T *)moveToGPU((uint8_t *)k.rs, N * sizeof(T), s);
         auto d_v = (T *)moveToGPU((uint8_t *)k.v, N * sizeof(T), s);
-        auto d_w = (T *)moveToGPU((uint8_t *)k.w, N * sizeof(T), s);
-        auto d_z = (T *)moveToGPU((uint8_t *)k.z, N * sizeof(T), s);
-        auto d_rin = (T *)moveToGPU((uint8_t *)k.rin, N * sizeof(T), s);
-        ReluZeroExtMuxKernel<<<(N - 1) / 256 + 1, 256>>>(party, bin, bout, N, d_I, d_dcf, d_rm, d_rmd, d_rmu, d_ud, d_m, d_v, d_w, d_z, d_rin, d_relu);
-        gpuFree(d_rm);
-        gpuFree(d_rmd);
-        gpuFree(d_rmu);
-        gpuFree(d_ud);
-        gpuFree(d_m);
+        auto d_p = (T *)moveToGPU((uint8_t *)k.p, N * sizeof(T), s);
+        auto d_q = (T *)moveToGPU((uint8_t *)k.q, N * sizeof(T), s);
+        ReluZeroExtMuxKernel<<<(N - 1) / 256 + 1, 256>>>(party, bin, bout, N, d_I, d_dcf, d_re, d_rs, d_v, d_p, d_q, d_relu);
+        gpuFree(d_re);
+        gpuFree(d_rs);
         gpuFree(d_v);
-        gpuFree(d_w);
-        gpuFree(d_z);
+        gpuFree(d_p);
+        gpuFree(d_q);
         return d_relu;
     }
 
     template <typename T>
-    std::pair<u32 *, T *> gpuReluZeroExt(SigmaPeer *peer, int party, GPUReluZeroExtKey<T> k, T *d_I, AESGlobalContext *g, Stats *s)
+    std::pair<u32 *, T *> gpuReluZeroExt(SigmaPeer *peer, int party, GPUReluZeroExtKey<T> k, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct=true)
     {
         std::vector<u32 *> h_mask({k.dReluKey.mask});
         auto d_dcf = dpf::gpuDcf<T, 1, dpf::dReluPrologue<0>, dpf::dReluEpilogue<0, false>>(k.dReluKey.dpfKey, party, d_I, g, s, &h_mask);
         peer->reconstructInPlace(d_dcf, 1, k.N, s); 
         auto d_relu = gpuReluZeroExtMux(party, k.bin, k.bout, k.N, k.selectKey, d_I, d_dcf, s);
-        peer->reconstructInPlace(d_relu, k.bout, k.N, s);
+        if (reconstruct)
+            peer->reconstructInPlace(d_relu, k.bout, k.N, s);
         return std::make_pair(d_dcf, d_relu);
     }
 }

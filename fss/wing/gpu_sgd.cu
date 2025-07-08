@@ -73,7 +73,6 @@ namespace wing
             dWWasNull = true;
         }
         shift = wing::lr_scale[epoch] + scaleVw - scaleW;
-        std::cout << "shift = " << shift << " " << scaleVw << " " << scaleW << std::endl;
         auto d_new_W = (T *)gpuMalloc(memSizeW);
         gpuLeftShiftAndAdd(N, d_W, d_Vw, d_new_W, shift, -T(wing::lr_fp));
         if (shift > 0){

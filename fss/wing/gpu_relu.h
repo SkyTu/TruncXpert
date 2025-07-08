@@ -30,8 +30,9 @@ namespace wing
     template <typename T>
     struct GPUSelectExtKey{
         int N;
-        T *rm, *rmd, *rmu, *ud, *m, *v, *w, *z, *rin;
+        T *re, *rs, *v, *p, *q;
     };
+
     template <typename T>
     struct GPUReluZeroExtKey
     {
@@ -69,23 +70,15 @@ namespace wing
         GPUSelectExtKey<T> k;
         k.N = N;
         size_t memSz = N * sizeof(T);
-        k.rm = (T *) *key_as_bytes;
+        k.re = (T *) *key_as_bytes;
         *key_as_bytes += memSz;
-        k.rmd = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.rmu = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.ud = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.m = (T *) *key_as_bytes;
+        k.rs = (T *) *key_as_bytes;
         *key_as_bytes += memSz;
         k.v = (T *) *key_as_bytes;
         *key_as_bytes += memSz;
-        k.w = (T *) *key_as_bytes;
+        k.p = (T *) *key_as_bytes;
         *key_as_bytes += memSz;
-        k.z = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.rin = (T *) *key_as_bytes;
+        k.q = (T *) *key_as_bytes;
         *key_as_bytes += memSz;
         return k;
     };
@@ -114,7 +107,6 @@ namespace wing
         k.selectKey = readGPUSelectExtKey<T>(key_as_bytes, k.N);
         return k;
     }
-
 
     template <typename T>
     GPU2RoundReLUKey<T> readTwoRoundReluKey(u8 **key_as_bytes)

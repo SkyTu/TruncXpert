@@ -1,0 +1,2578 @@
+CPU randomness, seed: 1234567890, offset: 0
+reserved memory: 24729616384 18446744073709551615
+Sync=712096000
+Opening fifos
+Conv2D 0
+MaxPool2D 0
+ReLU 1
+Conv2D 1
+MaxPool2D 0
+ReLU 1
+Conv2D 1
+MaxPool2D 0
+ReLU 1
+FC 1
+Model created
+weights/CNN3-2e.dat
+Reading weights from file=weights/CNN3-2e.dat
+Reading weights for layer=Conv2D
+Reading weights for layer=MaxPool2D
+Reading weights for layer=ReLU Extend
+Reading weights for layer=Conv2D
+Reading weights for layer=MaxPool2D
+Reading weights for layer=ReLU Extend
+Reading weights for layer=Conv2D
+Reading weights for layer=MaxPool2D
+Reading weights for layer=ReLU Extend
+Reading weights for layer=FC
+Weights initialized
+Allocating 5368709120 bytes of memory for comm bufs
+trying to connect with server...42005 - 3connected
+Starting training
+Opening file=keys1/CNN3_training_key1_0_0_0.dat
+Opt Mask size=1683536
+Time for key read: 5029
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 0
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 6.143 milliseconds
+   Reconstruct Time = 0.344 milliseconds
+   Online Time = 6.487 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.366 milliseconds
+   Reconstruct Time = 0.078 milliseconds
+   Online Time = 0.444 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 4.057 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.057 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5929
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 1
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.919 milliseconds
+   Reconstruct Time = 0.476 milliseconds
+   Online Time = 6.396 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.347 milliseconds
+   Reconstruct Time = 0.068 milliseconds
+   Online Time = 0.415 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 4.12 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.12 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4941
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 2
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.75 milliseconds
+   Reconstruct Time = 0.191 milliseconds
+   Online Time = 5.944 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.27 milliseconds
+   Reconstruct Time = 0.135 milliseconds
+   Online Time = 0.405 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 4.177 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.177 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4726
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 3
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.7 milliseconds
+   Reconstruct Time = 0.253 milliseconds
+   Online Time = 5.954 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.53 milliseconds
+   Reconstruct Time = 0.045 milliseconds
+   Online Time = 0.575 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 4 milliseconds
+   Compute Time = 4.122 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.122 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4709
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 4
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.912 milliseconds
+   Reconstruct Time = 0.338 milliseconds
+   Online Time = 6.251 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.439 milliseconds
+   Reconstruct Time = 0.035 milliseconds
+   Online Time = 0.474 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 4.184 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.184 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4729
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 5
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 6.073 milliseconds
+   Reconstruct Time = 0.195 milliseconds
+   Online Time = 6.27 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.324 milliseconds
+   Reconstruct Time = 0.234 milliseconds
+   Online Time = 0.558 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 6.499 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.499 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4811
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 6
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.797 milliseconds
+   Reconstruct Time = 0.073 milliseconds
+   Online Time = 5.871 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.293 milliseconds
+   Reconstruct Time = 0.054 milliseconds
+   Online Time = 0.347 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 6.34 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.34 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5172
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 7
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 9.048 milliseconds
+   Reconstruct Time = 0.334 milliseconds
+   Online Time = 9.383 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.495 milliseconds
+   Reconstruct Time = 0.048 milliseconds
+   Online Time = 0.543 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.206 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.206 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5303
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 8
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.658 milliseconds
+   Reconstruct Time = 0.092 milliseconds
+   Online Time = 5.752 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.293 milliseconds
+   Reconstruct Time = 0.195 milliseconds
+   Online Time = 0.488 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 6.376 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.376 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5309
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 9
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 8.93 milliseconds
+   Reconstruct Time = 2.002 milliseconds
+   Online Time = 10.933 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.391 milliseconds
+   Reconstruct Time = 0.508 milliseconds
+   Online Time = 0.899 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 6.667 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.667 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Online time (ms): 62614
+===========output/P1/training/loss/CNN3-2e-78b/weights/masked_weights_1_0_0_9.dat==========
+Getting loss for CIFAR10
+wIdx=210442, N=210442
+===========output/P1/training/loss/CNN3-2e-78b/weights/masked_optimizer_1_0_0_9.dat==========
+Weights file=output/P1/training/loss/CNN3-2e-78b/weights/masked_optimizer_1_0_0_9.dat, output/P1/training/loss/CNN3-2e-78b/weights/optimizer_mask_1_0_0_0.dat
+Opt Masked Size=210442
+Accuracy=10.000000, Loss=2.303169
+Time for key read: 5462
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 10
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.897 milliseconds
+   Reconstruct Time = 0.151 milliseconds
+   Online Time = 6.049 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.408 milliseconds
+   Reconstruct Time = 0.035 milliseconds
+   Online Time = 0.443 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 4.317 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.317 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5723
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 11
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 9.091 milliseconds
+   Reconstruct Time = 0.091 milliseconds
+   Online Time = 9.184 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.387 milliseconds
+   Reconstruct Time = 0.029 milliseconds
+   Online Time = 0.416 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 5 milliseconds
+   Compute Time = 4.173 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.173 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4708
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 12
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.808 milliseconds
+   Reconstruct Time = 0.285 milliseconds
+   Online Time = 6.095 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.437 milliseconds
+   Reconstruct Time = 0.068 milliseconds
+   Online Time = 0.505 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 6.462 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.462 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 8774
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 13
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.929 milliseconds
+   Reconstruct Time = 0.072 milliseconds
+   Online Time = 6.003 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.29 milliseconds
+   Reconstruct Time = 0.078 milliseconds
+   Online Time = 0.368 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.22 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.22 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 9691
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 14
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.909 milliseconds
+   Reconstruct Time = 0.08 milliseconds
+   Online Time = 5.991 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.27 milliseconds
+   Reconstruct Time = 0.172 milliseconds
+   Online Time = 0.442 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 4.06 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.06 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 9589
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 15
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.734 milliseconds
+   Reconstruct Time = 0.105 milliseconds
+   Online Time = 5.841 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.285 milliseconds
+   Reconstruct Time = 0.041 milliseconds
+   Online Time = 0.326 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 6.349 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.349 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4872
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 16
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 8.902 milliseconds
+   Reconstruct Time = 0.121 milliseconds
+   Online Time = 9.025 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.485 milliseconds
+   Reconstruct Time = 0.059 milliseconds
+   Online Time = 0.544 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 6.502 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.502 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5187
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 17
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 8.849 milliseconds
+   Reconstruct Time = 2.209 milliseconds
+   Online Time = 11.06 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.436 milliseconds
+   Reconstruct Time = 0.081 milliseconds
+   Online Time = 0.517 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 6.421 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 6.421 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 9022
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 18
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 8.927 milliseconds
+   Reconstruct Time = 0.23 milliseconds
+   Online Time = 9.16 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.463 milliseconds
+   Reconstruct Time = 0.044 milliseconds
+   Online Time = 0.507 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 4.277 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.277 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5475
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 19
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.741 milliseconds
+   Reconstruct Time = 0.133 milliseconds
+   Online Time = 5.874 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.514 milliseconds
+   Reconstruct Time = 0.042 milliseconds
+   Online Time = 0.556 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 4.137 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.137 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Online time (ms): 80332
+===========output/P1/training/loss/CNN3-2e-78b/weights/masked_weights_1_0_1_9.dat==========
+Getting loss for CIFAR10
+wIdx=210442, N=210442
+===========output/P1/training/loss/CNN3-2e-78b/weights/masked_optimizer_1_0_1_9.dat==========
+Weights file=output/P1/training/loss/CNN3-2e-78b/weights/masked_optimizer_1_0_1_9.dat, output/P1/training/loss/CNN3-2e-78b/weights/optimizer_mask_1_0_0_0.dat
+Opt Masked Size=210442
+Accuracy=10.000000, Loss=2.303681
+Time for key read: 4879
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 20
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.844 milliseconds
+   Reconstruct Time = 0.334 milliseconds
+   Online Time = 6.18 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.39 milliseconds
+   Reconstruct Time = 0.031 milliseconds
+   Online Time = 0.421 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.148 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.148 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5439
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 21
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.829 milliseconds
+   Reconstruct Time = 0.154 milliseconds
+   Online Time = 5.984 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.343 milliseconds
+   Reconstruct Time = 0.032 milliseconds
+   Online Time = 0.375 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.057 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.057 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4654
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 22
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.708 milliseconds
+   Reconstruct Time = 0.357 milliseconds
+   Online Time = 6.066 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.276 milliseconds
+   Reconstruct Time = 0.245 milliseconds
+   Online Time = 0.521 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 4.014 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.014 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 8223
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 23
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.811 milliseconds
+   Reconstruct Time = 0.467 milliseconds
+   Online Time = 6.28 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.298 milliseconds
+   Reconstruct Time = 0.167 milliseconds
+   Online Time = 0.465 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 3 milliseconds
+   Compute Time = 4.233 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.233 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4714
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 24
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 6.023 milliseconds
+   Reconstruct Time = 0.338 milliseconds
+   Online Time = 6.362 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.349 milliseconds
+   Reconstruct Time = 0.089 milliseconds
+   Online Time = 0.438 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.182 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.182 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4644
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 25
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.992 milliseconds
+   Reconstruct Time = 0.084 milliseconds
+   Online Time = 6.077 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.407 milliseconds
+   Reconstruct Time = 0.036 milliseconds
+   Online Time = 0.443 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.2 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.2 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 4929
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 26
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.639 milliseconds
+   Reconstruct Time = 0.505 milliseconds
+   Online Time = 6.146 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.257 milliseconds
+   Reconstruct Time = 0.112 milliseconds
+   Online Time = 0.369 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.135 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.135 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5269
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 27
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 5.891 milliseconds
+   Reconstruct Time = 0.091 milliseconds
+   Online Time = 5.983 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.309 milliseconds
+   Reconstruct Time = 0.025 milliseconds
+   Online Time = 0.334 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 4.119 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.119 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5350
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 28
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 2 milliseconds
+   Compute Time = 5.962 milliseconds
+   Reconstruct Time = 0.325 milliseconds
+   Online Time = 6.288 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.468 milliseconds
+   Reconstruct Time = 0.049 milliseconds
+   Online Time = 0.517 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 5 milliseconds
+   Compute Time = 4.268 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.268 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Time for key read: 5456
+Read Key Layer 0 begin
+Layer 0 begin
+Layer 0 done
+Read Key Layer 1 begin
+Layer 1 begin
+Layer 1 done
+Read Key Layer 2 begin
+Layer 2 begin
+Layer 2 done
+Read Key Layer 3 begin
+Layer 3 begin
+Layer 3 done
+Read Key Layer 4 begin
+Layer 4 begin
+Layer 4 done
+Read Key Layer 5 begin
+Layer 5 begin
+Layer 5 done
+Read Key Layer 6 begin
+Layer 6 begin
+Layer 6 done
+Read Key Layer 7 begin
+Layer 7 begin
+Layer 7 done
+Read Key Layer 8 begin
+Layer 8 begin
+Layer 8 done
+Read Key Layer 9 begin
+Layer 9 begin
+Layer 9 done
+Iteration: 29
+>> Softmax - start s1 = 64 s2 = 10 sf = 24
+>> MaxPool - Start
+>> MaxPool - End
+bitlength:64
+>> Relu2Round - Start
+   Key Read Time = 0 milliseconds
+   Compute Time = 5.775 milliseconds
+   Reconstruct Time = 0.245 milliseconds
+   Online Time = 6.022 milliseconds
+   Online Comm = 11520 bytes
+>> Relu2Round - End
+>> ElemWise Mult - start
+   Key Read Time = 0 milliseconds
+   Compute Time = 0.276 milliseconds
+   Reconstruct Time = 0.161 milliseconds
+   Online Time = 0.437 milliseconds
+>> ElemWise Mult - end
+>> ScaleDown - Start 
+>> Truncate - Start
+   Key Read Time = 1 milliseconds
+   Compute Time = 4.18 milliseconds
+   Reconstruct Time = 0 milliseconds
+   Online Time = 4.18 milliseconds
+   Online Comm = 0 bytes
+>> Truncate - End
+>> ScaleDown - End 
+>> Softmax - end
+Before reconstruct in GPU softmax
+After reconstruct in GPU softmax
+Softmax finished
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 9 backward done
+Layer 8 backward done
+Layer 7 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 6 backward done
+Layer 5 backward done
+Layer 4 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 3 backward done
+Layer 2 backward done
+Layer 1 backward done
+ZeroExt reconstruct: 0
+ZeroExt reconstruct: 1
+ZeroExt reconstruct: 1
+Layer 0 backward done
+Online time (ms): 65462
+===========output/P1/training/loss/CNN3-2e-78b/weights/masked_weights_1_0_2_9.dat==========
+Getting loss for CIFAR10
+wIdx=210442, N=210442
+===========output/P1/training/loss/CNN3-2e-78b/weights/masked_optimizer_1_0_2_9.dat==========
+Weights file=output/P1/training/loss/CNN3-2e-78b/weights/masked_optimizer_1_0_2_9.dat, output/P1/training/loss/CNN3-2e-78b/weights/optimizer_mask_1_0_0_0.dat
+Opt Masked Size=210442
+Accuracy=10.000000, Loss=2.303766
+Time for key read: 3783

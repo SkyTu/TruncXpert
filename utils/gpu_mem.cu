@@ -27,18 +27,17 @@
 #include "helper_cuda.h"
 #include "gpu_stats.h"
 #include <cassert>
-
 // #include <sys/types.h>
 
 cudaMemPool_t mempool;
+extern int global_device;
 
 extern "C" void initGPUMemPool()
 {
     int isMemPoolSupported = 0;
-    int device = 0;
-    // is it okay to use device=0?
+    checkCudaErrors(cudaSetDevice(global_device));
     checkCudaErrors(cudaDeviceGetAttribute(&isMemPoolSupported,
-                                           cudaDevAttrMemoryPoolsSupported, device));
+                                           cudaDevAttrMemoryPoolsSupported, global_device));
     // printf("%d\n", isMemPoolSupported);
     assert(isMemPoolSupported);
     /* implicitly assumes that the device is 0 */
@@ -49,11 +48,11 @@ extern "C" void initGPUMemPool()
     // poolProps.location.type = cudaMemLocationTypeDevice;
     // poolProps.location.id = 0;
     // checkCudaErrors(cudaMemPoolCreate(&mempool, &poolProps)); 
-    checkCudaErrors(cudaDeviceGetDefaultMemPool(&mempool, device));
-    uint64_t threshold = 9 * (1ULL << 30);
+    checkCudaErrors(cudaDeviceGetDefaultMemPool(&mempool, global_device));
+    uint64_t threshold = UINT64_MAX;
     checkCudaErrors(cudaMemPoolSetAttribute(mempool, cudaMemPoolAttrReleaseThreshold, &threshold));
     uint64_t *d_dummy_ptr;
-    uint64_t bytes = 8 * (1ULL << 30);
+    uint64_t bytes = 3 * (1ULL << 30);
     checkCudaErrors(cudaMallocAsync(&d_dummy_ptr, bytes, 0));
     checkCudaErrors(cudaFreeAsync(d_dummy_ptr, 0));
     checkCudaErrors(cudaDeviceSynchronize());
@@ -65,6 +64,7 @@ extern "C" void initGPUMemPool()
 
 extern "C" void destroyGPUMemPool()
 {
+    checkCudaErrors(cudaSetDevice(global_device));
     checkCudaErrors(cudaDeviceSynchronize());
     checkCudaErrors(cudaMemPoolTrimTo(mempool, 0));
     checkCudaErrors(cudaDeviceReset());
@@ -73,6 +73,7 @@ extern "C" void destroyGPUMemPool()
 
 extern "C" uint8_t *gpuMalloc(size_t size_in_bytes)
 {
+    checkCudaErrors(cudaSetDevice(global_device));
     uint8_t *d_a;
     checkCudaErrors(cudaMallocAsync(&d_a, size_in_bytes, 0));
     return d_a;
@@ -91,6 +92,7 @@ extern "C" uint8_t *cpuMalloc(size_t size_in_bytes, bool pin)
 
 extern "C" void gpuFree(void *d_a)
 {
+    checkCudaErrors(cudaSetDevice(global_device));
     checkCudaErrors(cudaFreeAsync(d_a, 0));
 }
 
@@ -103,6 +105,7 @@ extern "C" void cpuFree(void *h_a, bool pinned)
 
 extern "C" uint8_t *moveToCPU(uint8_t *d_a, size_t size_in_bytes, Stats *s)
 {
+    checkCudaErrors(cudaSetDevice(global_device));
     uint8_t *h_a = cpuMalloc(size_in_bytes, true);
     auto start = std::chrono::high_resolution_clock::now();
     checkCudaErrors(cudaMemcpy(h_a, d_a, size_in_bytes, cudaMemcpyDeviceToHost));
@@ -115,6 +118,7 @@ extern "C" uint8_t *moveToCPU(uint8_t *d_a, size_t size_in_bytes, Stats *s)
 
 extern "C" uint8_t *moveIntoGPUMem(uint8_t *d_a, uint8_t *h_a, size_t size_in_bytes, Stats *s)
 {
+    checkCudaErrors(cudaSetDevice(global_device));
     auto start = std::chrono::high_resolution_clock::now();
     checkCudaErrors(cudaMemcpy(d_a, h_a, size_in_bytes, cudaMemcpyHostToDevice));
     auto end = std::chrono::high_resolution_clock::now();
@@ -126,6 +130,7 @@ extern "C" uint8_t *moveIntoGPUMem(uint8_t *d_a, uint8_t *h_a, size_t size_in_by
 
 extern "C" uint8_t *moveIntoCPUMem(uint8_t *h_a, uint8_t *d_a, size_t size_in_bytes, Stats *s)
 {
+    checkCudaErrors(cudaSetDevice(global_device));
     auto start = std::chrono::high_resolution_clock::now();
     checkCudaErrors(cudaMemcpy(h_a, d_a, size_in_bytes, cudaMemcpyDeviceToHost));
     auto end = std::chrono::high_resolution_clock::now();
@@ -137,6 +142,7 @@ extern "C" uint8_t *moveIntoCPUMem(uint8_t *h_a, uint8_t *d_a, size_t size_in_by
 
 extern "C" uint8_t *moveToGPU(uint8_t *h_a, size_t size_in_bytes, Stats *s)
 {
+    checkCudaErrors(cudaSetDevice(global_device));
     uint8_t *d_a = gpuMalloc(size_in_bytes);
     auto start = std::chrono::high_resolution_clock::now();
     checkCudaErrors(cudaMemcpy(d_a, h_a, size_in_bytes, cudaMemcpyHostToDevice));

@@ -1,12 +1,12 @@
 CUDA_VERSION ?= $(value CUDA_VERSION)
 ifeq ($(CUDA_VERSION),)
-	CUDA_VERSION = 11.7
+	CUDA_VERSION = 12.4
 endif
 CUTLASS_PATH=./ext/cutlass
 SYTORCH_PATH=./ext/sytorch
 SYTORCH_BUILD_PATH=$(SYTORCH_PATH)/build
 LLAMA_PATH=$(SYTORCH_PATH)/ext/llama
-CUDA_ARCH =$(GPU_ARCH)
+CUDA_ARCH =86
 
 CXX=/usr/local/cuda-$(CUDA_VERSION)/bin/nvcc
 FLAGS := -O3 -gencode arch=compute_$(CUDA_ARCH),code=[sm_$(CUDA_ARCH),compute_$(CUDA_ARCH)] -std=c++17 -m64 -Xcompiler="-O3,-w,-std=c++17,-fpermissive,-fpic,-pthread,-fopenmp,-march=native" 
@@ -85,7 +85,16 @@ wing_evaluator: experiments/wing/wing_evaluator.cu experiments/datasets/mnist.cp
 	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) $(SECFLOAT_LIBS) -o experiments/wing/wing_evaluator
 
 wing_fc: tests/nn/wing/fc_test.cu
-	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/nn/wing/fc
+	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) $(SECFLOAT_LIBS) -o tests/nn/wing/fc
+
+wing_truncate_relu: tests/fss/wing/truncate_relu.cu
+	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) $(SECFLOAT_LIBS) -o tests/fss/wing/truncate_relu
+
+wing_truncate: tests/fss/wing/truncate.cu
+	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) $(SECFLOAT_LIBS) -o tests/fss/wing/truncate
+
+wing_select_ext: tests/fss/wing/select_extend.cu
+	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) $(SECFLOAT_LIBS) -o tests/fss/wing/select_extend
 
 dcf: tests/fss/dcf/dcf.cu
 	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/dcf
@@ -93,11 +102,14 @@ dcf: tests/fss/dcf/dcf.cu
 aes: tests/fss/dcf/aes.cu
 	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/aes
 
-dcf_relu_extend: tests/fss/dcf/relu_extend.cu
-	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/relu_extend
+dcf_truncate_relu: tests/fss/dcf/truncate_relu.cu
+	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/truncate_relu
 
 dcf_stochastic_truncate: tests/fss/dcf/stochastic_truncate.cu
 	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/stochastic_truncate
+
+dcf_truncate: tests/fss/dcf/truncate.cu
+	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/truncate
 
 dcf_relu: tests/fss/dcf/relu.cu
 	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/relu

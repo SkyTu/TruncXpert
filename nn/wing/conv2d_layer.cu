@@ -260,9 +260,7 @@ namespace wing
         gpuFree(d_mask_I);
         gpuFree(d_mask_F);
 
-        std::cout << "Before Truncate" << std::endl;
         wing::gpuTruncate(p.bin, p.bout, tf, truncateKeyC, global::scale, peer, party, p.size_O, d_C, gaes, &(this->s));
-        std::cout << "After Truncate" << std::endl;
         return d_C;
     }
 

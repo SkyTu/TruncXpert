@@ -75,6 +75,38 @@ namespace dcf
                 f.flush();
                 f.close();
             }
+
+            void dumpOptimizer(std::string filename, int party)
+            {
+                std::ofstream f(filename);
+                if (!f)
+                {
+                    std::cerr << "can't open output file=" << filename << std::endl;
+                    assert(0);
+                }
+                for (int i = 0; i < layers.size(); i++)
+                {
+                    layers[i]->dumpOptimizer(f, party);
+                }
+                f.flush();
+                f.close();
+            }
+
+            void dumpOptimizerMask(std::string filename, int party)
+            {
+                std::ofstream f(filename);
+                if (!f)
+                {
+                    std::cerr << "can't open output file=" << filename << std::endl;
+                    assert(0);
+                }
+                for (int i = 0; i < layers.size(); i++)
+                {
+                    layers[i]->dumpOptimizerMask(f, party);
+                }
+                f.flush();
+                f.close();
+            }
         };
 
     }

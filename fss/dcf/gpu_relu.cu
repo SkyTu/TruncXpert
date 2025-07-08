@@ -138,22 +138,29 @@ namespace dcf
         writeInt(key_as_bytes, bin);
         writeInt(key_as_bytes, bout);
         writeInt(key_as_bytes, N);
+        auto cur_bytes = *key_as_bytes;
         gpuKeyGenDCF(key_as_bytes, party, bin, 2, N, d_inputMask, T(1), g);
+        int key_as_bytes_sz = *key_as_bytes - cur_bytes;
+        printf("Key size=%d\n", key_as_bytes_sz);
         auto d_dreluMask = randomGEOnGpu<u8>(N, 2);
         // checkCudaErrors(cudaMemset(d_dreluMask, 0, N));
         auto d_dcfMask = randomGEOnGpu<u8>(N, 2);
         // checkCudaErrors(cudaMemset(d_dcfMask, 0, N));
+        cur_bytes = *key_as_bytes;
+        // write the drelu and dcf masks
         writeShares<u8, u8>(key_as_bytes, party, N, d_dreluMask, 2);
         writeShares<u8, u8>(key_as_bytes, party, N, d_dcfMask, 2);
         auto d_randomMask = genReluExtendMuxKey(key_as_bytes, party, bin, bout, N, d_inputMask, d_dreluMask, d_dcfMask);
         // gpuFree(d_inputMask);
+        key_as_bytes_sz = *key_as_bytes - cur_bytes;
+        printf("Key size=%d\n", key_as_bytes_sz);
         gpuFree(d_dcfMask);
         // gpuFree(d_dreluMask);
         return std::make_pair(d_dreluMask, d_randomMask);
     }
 
     template <typename T>
-    std::pair<u32 *, T *> gpuReluExtend(SigmaPeer *peer, int party, GPUReluExtendKey<T> k, T *d_I, AESGlobalContext *g, Stats *s)
+    std::pair<u32 *, T *> gpuReluExtend(SigmaPeer *peer, int party, GPUReluExtendKey<T> k, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct = true)
     {
         // printf("%d, %d, %d\n", k.bin, k.bout, k.N);
         std::vector<u32 *> h_masks = {k.dReluKey.dReluMask, k.dcfMask};
@@ -162,7 +169,8 @@ namespace dcf
         auto d_drelu = d_dcf;
         auto d_xLTRin = (u32 *)(((u8 *)d_dcf) + k.dReluKey.dcfKey.memSzOut);
         auto d_relu = gpuReluExtendMux(party, k.bin, k.N, d_I, k.oneHot, k.outMask, d_drelu, d_xLTRin, s);
-        peer->reconstructInPlace(d_relu, k.bout, k.N, s);
+        if(reconstruct)
+            peer->reconstructInPlace(d_relu, k.bout, k.N, s);
         return std::make_pair(d_drelu, d_relu);
     }
 }

@@ -38,8 +38,14 @@ using T = u64;
 
 using namespace wing;
 
+int global_device = 0;
+
 int main(int argc, char *argv[])
 {
+    int party = atoi(argv[1]);
+    auto peer = new GpuPeer(false);
+    peer->connect(party, argv[2]);
+    global_device = atoi(argv[3]);
     // int party, bool pinMem, bool compress, std::string ip0, int port0, std::string ip1, int port1, std::string ip2, int port2
     AESGlobalContext g;
     initAESContext(&g);
@@ -48,9 +54,6 @@ int main(int argc, char *argv[])
     bool useMomentum = true;
     int epoch = 0;
 
-    int party = atoi(argv[1]);
-    auto peer = new GpuPeer(false);
-    peer->connect(party, argv[2]);
 
     auto fc_layer = FCLayer<T>(bin, bout, M, N, K, wing::TruncateType::StochasticTR, wing::TruncateType::StochasticTruncate, true, true, false);
     fc_layer.setTrain(useMomentum);

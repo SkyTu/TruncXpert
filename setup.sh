@@ -1,5 +1,5 @@
 read -p "Enter CUDA version (default: 11.7): " CUDA_VERSION
-CUDA_VERSION=${CUDA_VERSION:-11.7}
+CUDA_VERSION=${CUDA_VERSION:-12.4}
 
 read -p "Enter GPU architecture (default: 86): " GPU_ARCH
 GPU_ARCH=${GPU_ARCH:-86}

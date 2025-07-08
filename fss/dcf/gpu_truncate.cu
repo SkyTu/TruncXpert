@@ -177,14 +177,15 @@ namespace dcf
 
     // no memory leaks
     template <typename T>
-    void gpuSignExtend(GPUSignExtendKey<T> k, int party, SigmaPeer *peer, T *d_I, AESGlobalContext *g, Stats *s)
+    void gpuSignExtend(GPUSignExtendKey<T> k, int party, SigmaPeer *peer, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct=true)
     {
         gpuLinearComb(k.bin, k.N, d_I, T(1), d_I, T(1ULL << (k.bin - 1)));
         std::vector<u32 *> h_dcfMask = {k.dcfKey.dReluMask};
         auto d_maskedDcfBit = dcf::gpuDcf<T, 1, dcf::idPrologue, dcf::maskEpilogue>(k.dcfKey.dcfKey, party, d_I, g, s, &h_dcfMask);
         peer->reconstructInPlace(d_maskedDcfBit, 1, k.N, s);
         gpuSelectForTruncate(party, k.N, d_I, d_maskedDcfBit, k.t, k.p, s);
-        peer->reconstructInPlace(d_I, k.bout, k.N, s);
+        if (reconstruct)
+            peer->reconstructInPlace(d_I, k.bout, k.N, s);
         gpuFree(d_maskedDcfBit);
     }
 
@@ -214,10 +215,10 @@ namespace dcf
     }
 
     template <typename T>
-    void gpuStochasticTruncate(GPUTruncateKey<T> k, int party, SigmaPeer *peer, T *d_I, AESGlobalContext *g, Stats *s)
+    void gpuStochasticTruncate(GPUTruncateKey<T> k, int party, SigmaPeer *peer, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct=true)
     {
         gpuStochasticTR(k.stTRKey, party, peer, d_I, g, s);
-        gpuSignExtend(k.signExtendKey, party, peer, d_I, g, s);
+        gpuSignExtend(k.signExtendKey, party, peer, d_I, g, s, reconstruct);
     }
 
     template <typename T>

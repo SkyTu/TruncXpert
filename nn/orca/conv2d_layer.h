@@ -66,7 +66,9 @@ namespace dcf
             T *backward(SigmaPeer *peer, int party, T *d_incomingGrad, AESGlobalContext *gaes, int epoch);
             void initWeights(u8 **weights, bool floatWeights);
             void dumpWeights(std::ofstream &f);
-            void printWeights();
+            void dumpOptimizer(std::ofstream &f, int party);
+            void dumpOptimizerMask(std::ofstream &f, int party);
+            void initOptimizer(uint8_t **weights, int party);
         };
     }
 }

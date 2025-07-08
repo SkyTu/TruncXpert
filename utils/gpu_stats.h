@@ -27,6 +27,10 @@ public:
     uint64_t transfer_time = 0;
     uint64_t compute_time = 0;
     uint64_t comm_time = 0;
+    uint64_t tre_time = 0;
+    uint64_t zeroext_time = 0;
+    uint64_t compress_time = 0;
+    uint64_t expand_time = 0;
 
     uint64_t conv_time = 0;
     uint64_t conv_compute_time = 0;
@@ -57,6 +61,7 @@ public:
     uint64_t gelu_comm_bytes = 0;
     uint64_t softmax_comm_bytes = 0;
     uint64_t layernorm_comm_bytes = 0;
+    uint64_t truncate_comm_bytes = 0;
 
     void reset()
     {

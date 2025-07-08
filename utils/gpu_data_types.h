@@ -69,3 +69,4 @@ namespace wing
         static const int extra_shift = 7;
     }
 }
+

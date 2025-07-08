@@ -28,7 +28,7 @@ namespace dcf
     namespace orca
     {
         static const uint64_t lr_fp = 1;
-        static const int lr_scale[10] = {6, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+        static const int lr_scale[10] = {6, 6, 6, 10, 10, 10, 10, 10, 10, 10};
         static const uint64_t mom_fp = 29;
         static const int mom_scale = 5;
     }

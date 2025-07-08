@@ -117,6 +117,7 @@ namespace wing
         writeShares<T, T>(key_as_bytes, party, N, m, bout);
         gpuFree(u);
         gpuFree(m);
+        // gpuFree(d_inputMask);
         return d_outMask;
     }
     
@@ -218,9 +219,7 @@ namespace wing
             x[i] = x[i] + (1ULL << (bin - 2));
             gpuMod(x[i], bin);
             auto msb_xhat = gpuMsb(x[i], bin);
-            x[i] = x[i] - (1ULL << (bin - 2));
-            gpuMod(x[i], bout);
-            x[i] = (party == SERVER1) * x[i] + u[i] + m[i] * (!msb_xhat);
+            x[i] = party * (x[i] - (1ULL << (bin - 2))) + u[i] + m[i] * (!msb_xhat);
             gpuMod(x[i], bout);
         }
     }
@@ -240,7 +239,6 @@ namespace wing
     template <typename T>
     void gpuZeroExt(GPUZeroExtKey<T> k, int party, SigmaPeer *peer, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct = true)
     {
-        std::cout << "ZeroExt reconstruct: " << reconstruct << std::endl;
         gpuZeroExtend(party, k.N, k.bin, k.bout, d_I, k.m, k.u, s);
         if (reconstruct)
             peer->reconstructInPlace(d_I, k.bout, k.N, s);
@@ -265,7 +263,7 @@ namespace wing
     void gpuStTR(GPUTruncateKey<T> k, int party, SigmaPeer *peer, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct = true)
     {
         gpuTRe(k.TReKey, party, peer, d_I, g, s, true);
-        gpuZeroExt(k.ZeroExtKey, party, peer, d_I, g, s, reconstruct);
+        gpuZeroExt(k.ZeroExtKey, party, peer, d_I, g, s, reconstruct); 
     }
     
     template <typename T>

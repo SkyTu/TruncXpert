@@ -60,7 +60,9 @@ namespace dcf
             virtual void initWeights(u8 **weights, bool floatWeights) {}
             virtual void dumpWeights(std::ofstream &f) {}
             virtual void printWeights() {}
+            virtual void dumpOptimizer(std::ofstream &f, int party) {}
+            virtual void dumpOptimizerMask(std::ofstream &f, int party) {}
+            virtual void initOptimizer(uint8_t **weights, int party) {}
         };
-
     }
 }
