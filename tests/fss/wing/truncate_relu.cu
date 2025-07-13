@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     
 
     u8 *startPtr, *curPtr;
-    size_t keyBufSz = 10 * OneGB;
+    size_t keyBufSz = 8 * OneGB;
     getKeyBuf(&startPtr, &curPtr, keyBufSz);
     T* h_r = (T*) cpuMalloc(N * sizeof(T));
     wing::TruncateType t = wing::TruncateType::StochasticTR;
