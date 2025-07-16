@@ -229,7 +229,6 @@ public:
     template <typename T>
     void _reconstructInPlace(T *d_A0, int bw, int N, Stats *s)
     {
-        // printf("%d, %d\n", bw, N);
         size_t memSz = 0, numInts = 0;
         auto d_compressedA0 = compressMem(bw, bw, N, d_A0, memSz, numInts, s);
         moveIntoCPUMem(h_bufA0, (u8 *)d_compressedA0 /*d_A0*/, memSz, s);

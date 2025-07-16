@@ -70,9 +70,7 @@ int main(int argc, char *argv[])
     
     dcf::TruncateType t = dcf::TruncateType::StochasticTR;
     auto d_outputMask = dcf::genGPUTruncateKey(&curPtr, party, t, bin, bout, shift, N, d_mask_X, &g);
-    printf("Key size=%lu\n", curPtr - startPtr);
     auto d_tempMask = dcf::gpuKeygenReluExtend(&curPtr, party, bin-shift, bout, N, d_outputMask, &g);
-    printf("Key size=%lu\n", curPtr - startPtr);
     auto d_dreluMask = d_tempMask.first;
     gpuFree(d_dreluMask);
     auto d_reluMask = d_tempMask.second;

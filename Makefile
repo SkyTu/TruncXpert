@@ -105,6 +105,9 @@ aes: tests/fss/dcf/aes.cu
 dcf_truncate_relu: tests/fss/dcf/truncate_relu.cu
 	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/truncate_relu
 
+dcf_select_extend: tests/fss/dcf/select_extend.cu
+	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/select_extend
+
 dcf_stochastic_truncate: tests/fss/dcf/stochastic_truncate.cu
 	$(CXX) $(FLAGS) $(INCLUDES) $^ $(UTIL_FILES) $(LIBS) -o tests/fss/dcf/stochastic_truncate
 

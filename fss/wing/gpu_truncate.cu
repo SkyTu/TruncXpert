@@ -262,8 +262,17 @@ namespace wing
     template <typename T>
     void gpuStTR(GPUTruncateKey<T> k, int party, SigmaPeer *peer, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct = true)
     {
+        auto start = std::chrono::high_resolution_clock::now();
         gpuTRe(k.TReKey, party, peer, d_I, g, s, true);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto elapsed = end - start;
+        std::cout << "Time to execute TRe in ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << std::endl;
+
+        start = std::chrono::high_resolution_clock::now();
         gpuZeroExt(k.ZeroExtKey, party, peer, d_I, g, s, reconstruct); 
+        end = std::chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        std::cout << "Time to execute ZeroExt in ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << std::endl;
     }
     
     template <typename T>

@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     auto temp = wing::gpuReluZeroExt(peer, party, k1, d_X_share, &g, (Stats *)NULL, false);
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = end - start;
-    printf("Time taken=%lu micros\n", std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count());
+    printf("Time taken=%lu micros\n", std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count());
     auto end_send = peer->peer->keyBuf->bytesSent;
     std::cout << "Send " << end_send - start_send << " bytes." << std::endl;
 

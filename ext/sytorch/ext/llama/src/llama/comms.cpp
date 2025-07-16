@@ -54,7 +54,6 @@ SocketBuf::SocketBuf(std::string ip, int port, bool onlyRecv = false)
     
     std::cerr << "trying to connect with server...";
     std::cerr << "ip is " << ip;
-    ip = "127.0.0.1";
     {
         struct sockaddr_in addr;
         addr.sin_family = AF_INET;
@@ -84,7 +83,7 @@ SocketBuf::SocketBuf(std::string ip, int port, bool onlyRecv = false)
     {
         struct sockaddr_in addr;
         addr.sin_family = AF_INET;
-        std::cerr << "not only recv, send port is " << port + 3;
+        std::cerr << "not only recv, send port is " << port + 3 << std::endl;
         addr.sin_port = htons(port + 3);
         addr.sin_addr.s_addr = inet_addr(ip.c_str());
         while (1)

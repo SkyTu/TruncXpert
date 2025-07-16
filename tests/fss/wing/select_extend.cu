@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     std::vector<u32 *> h_mask({k1.mask});
     auto end = std::chrono::high_resolution_clock::now();
     auto end_send = peer->peer->keyBuf->bytesSent;
-    auto time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     auto send_bytes = end_send - start_send;
 
     auto d_dcf = dpf::gpuDcf<T, 1, dpf::dReluPrologue<0>, dpf::dReluEpilogue<0, false>>(k1.dpfKey, party, d_X_share, &g, (Stats*) NULL, &h_mask);
@@ -98,8 +98,8 @@ int main(int argc, char *argv[]) {
     start = std::chrono::high_resolution_clock::now();
     auto d_relu = wing::gpuReluZeroExtMux(party, bin-shift, bout, N, k2, d_X_share, d_dcf, (Stats *)NULL);
     end = std::chrono::high_resolution_clock::now();
-    time = time + std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-    printf("Time taken=%lu micros\n", time);
+    time = time + std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    printf("Time taken=%lu millis\n", time);
     end_send = peer->peer->keyBuf->bytesSent;
     send_bytes = send_bytes + end_send - start_send;
     std::cout << "Send " << send_bytes << " bytes." << std::endl;
