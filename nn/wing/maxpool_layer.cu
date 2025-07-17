@@ -98,11 +98,13 @@
     T *MaxPool2DLayer<T>::genBackwardKey(uint8_t **key_as_bytes, int party, T *d_incomingGradMask, AESGlobalContext *gaes, int epoch)
     {
         this->checkIfTrain();
+        std::cout << "Generating backward key for Maxpool" << std::endl;
         size_t oneHotSize = p.N * p.H * p.W * p.C * p.FH * p.FW;
         auto d_oneHotMask = (u8 *)moveToGPU((u8 *)oneHotOutputMask, oneHotSize, NULL);
         auto d_outgoingGradMask = keyGenMaxpoolBackProp(key_as_bytes, party, p, d_oneHotMask, d_incomingGradMask);
         gpuFree(d_oneHotMask);
         gpuFree(d_incomingGradMask);
+        std::cout << "Finish Generating backward key for Maxpool" << std::endl;
         return d_outgoingGradMask;
     }
 
@@ -132,7 +134,7 @@
     void MaxPool2DLayer<T>::readBackwardKey(uint8_t **key_as_bytes, int epoch)
     {
         int numSelects = p.N * p.H * p.W * p.C * p.FH * p.FW;
-        backpropSelectKey = readGPUSelectExtendKey<T>(key_as_bytes, numSelects);
+        backpropSelectKey = readGPUSelectExtKey<T>(key_as_bytes, numSelects);
         // backpropSelectKey = readGPUSelectKey<T>(key_as_bytes, numSelects);
     }
 
@@ -169,10 +171,10 @@
         int numInts = (oneHotSize - 1) / PACKING_SIZE + 1;
 
         auto d_oneHot = (u32 *)moveToGPU((uint8_t *)oneHot, numInts * sizeof(u32), &(this->s));
-        auto d_outgoingGradExpanded = gpuSelectForMaxpoolBackprop(p, backpropSelectKey, d_oneHot, d_incomingGrad,
+        auto d_outgoingGradExpanded = gpuSelectForMaxpoolBackprop<T>(p, backpropSelectKey, d_oneHot, d_incomingGrad,
                                                                     party, &(this->s));
         gpuFree(d_incomingGrad);
-        auto d_outgoingGrad = gpuCollectGradients(p, d_outgoingGradExpanded, &(this->s));
+        auto d_outgoingGrad = gpuCollectGradients<T>(p, d_outgoingGradExpanded, &(this->s));
         peer->reconstructInPlace(d_outgoingGrad, p.bwBackprop, outgoingGradSize, &(this->s));
         gpuFree(d_oneHot);
         gpuFree(d_outgoingGradExpanded);

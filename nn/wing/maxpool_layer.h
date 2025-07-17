@@ -27,6 +27,7 @@
 #include "fss/gpu_and.h"
 
 #include "gpu_layer.h"
+#include "fss/gpu_select.h"
 
 namespace wing
 {
@@ -36,7 +37,7 @@ namespace wing
     public:
         MaxpoolParams p;
         GPUMaxpoolKey<T> maxpoolKey;
-        GPUSelectExtendKey<T> backpropSelectKey;
+        GPUSelectExtKey<T> backpropSelectKey;
         u32 *oneHot;
         u8 *oneHotOutputMask;
         AESGlobalContext *gaes;

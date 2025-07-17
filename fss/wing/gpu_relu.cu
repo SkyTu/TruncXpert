@@ -55,10 +55,10 @@ namespace wing
         writeShares<T, T>(key_as_bytes, party, N, p, bout);
         writeShares<T, T>(key_as_bytes, party, N, q, bout);
         
-        gpuFree(inputMask);
         gpuFree(v);
         gpuFree(p);
         gpuFree(q);
+        gpuFree(re);
         return outputMask;
     }
 

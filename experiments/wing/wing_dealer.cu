@@ -77,16 +77,20 @@ void genModelKey(wing::GPUModel<u64> *m, u8 **bufPtr, int party, AESGlobalContex
         printf("h_mask_I[%d] = %lu\n", i, h_mask_I[i]);
     }
     u64 *d_mask_O = NULL;
+    std::cout << "Generating forward key" << std::endl;
     for (int i = 0; i < m->layers.size(); i++)
     {   
+        std::cout << "Generating key for layer " << i << std::endl;
         d_mask_O = m->layers[i]->genForwardKey(bufPtr, party, d_mask_I, g);
         assert(d_mask_O != d_mask_I);
         gpuFree(d_mask_I);
         d_mask_I = d_mask_O;
     }
     d_mask_I = gpuGenSoftmaxKey(m->batchSz, m->classes, d_mask_I, secfloat, llama);
+    std::cout << "Generating backward key" << std::endl;
     for (int i = m->layers.size() - 1; i >= 0; i--)
     {
+        std::cout << "Generating key for layer " << i << std::endl;
         d_mask_I = m->layers[i]->genBackwardKey(bufPtr, party, d_mask_I, g, epoch);
     }
 }

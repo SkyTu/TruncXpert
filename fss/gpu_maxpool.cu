@@ -21,6 +21,7 @@
 
 #include "utils/gpu_data_types.h"
 #include "utils/gpu_random.h"
+#include "wing/gpu_relu.h"
 #include "gpu_relu.h"
 
 template <typename T>
@@ -444,11 +445,7 @@ __global__ void selectForMaxpoolBackpropKernelOrca(MaxpoolParams p, uint32_t *on
 }
 
 template <typename T>
-__global__ void selectForMaxpoolBackpropKernel(MaxpoolParams p, uint32_t *oneHot,
-                                               T *incomingGrad, T *out,
-                                               T *rb, T *rin,
-                                               T *rout, T *v,
-                                               T *d_p, T *d_q, int party, int bin, int bout, int N)
+__global__ void selectForMaxpoolBackpropKernel(MaxpoolParams p, int party, int bin, int bout, int N, T* d_I, u32* d_dcf, T* d_re, T* d_rs, T* d_v, T* d_p, T* d_q, T* res)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < N)
@@ -463,22 +460,22 @@ __global__ void selectForMaxpoolBackpropKernel(MaxpoolParams p, uint32_t *oneHot
         t = t % (p.C * p.FH * p.FW);
         int c = t / (p.FH * p.FW);
 
-        T x = (oneHot[i / 32] >> laneId) & T(1);
-        T is_zero_x = (x == 0);
         int j = n * p.H * p.W * p.C + h * p.W * p.C + w * p.C + c;
-        T y = incomingGrad[j] + (1ULL << (bin - 2));
-        gpuMod(y, bin);
-        // 之前这里没有乘以 2 的 m次方  
-        auto mx = (1 - gpuMsb(y, bin));
-        y = y - (1ULL << (bin - 2));
-        assert(mx == 0 || mx == 1);
-        if(is_zero_x){
-            out[i] = rb[i] * y + mx * d_p[i] + v[i] - rin[i] + rout[i];
+        d_I[i] = d_I[i] + (1ULL << (bin - 2));
+        gpuMod(d_I[i], bin);
+        auto tt = (1ULL - gpuMsb(d_I[i], bin)) * (1ULL << bin);
+        auto dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
+        d_I[i] = d_I[i] - (1ULL << (bin - 2));
+        gpuMod(d_I[i], bout);
+        assert(dhat == 0 || dhat == 1);
+        
+        if(dhat){
+            res[i] = (T(party) - d_rs[i]) * d_I[i] + tt * (d_q[i]) - d_v[i];
         }
         else{
-            out[i] = (party - rb[i]) * y + mx * d_q[i] - v[i] + rout[i];
+            res[i] = d_rs[i] * d_I[i] + tt * d_p[i] + d_v[i] - d_re[i];
         }
-        gpuMod(y, bout);
+        gpuMod(res[i], bout);
     }
 }
 
@@ -614,28 +611,25 @@ T *gpuSelectForMaxpoolBackpropOrca(MaxpoolParams p, GPUSelectKey<T> k,
 
 // no memory leak
 template <typename T>
-T *gpuSelectForMaxpoolBackprop(MaxpoolParams p, GPUSelectExtendKey<T> k,
+T *gpuSelectForMaxpoolBackprop(MaxpoolParams p, GPUSelectExtKey<T> k,
                                uint32_t *d_oneHot,
                                T *d_incomingGrad,
                                int party, Stats *stats)
 {
     size_t memSz = k.N * sizeof(T);
-    T *d_rb = (T *)moveToGPU((uint8_t *)k.rb, memSz, stats);
-    T *d_rin = (T *)moveToGPU((uint8_t *)k.rin, memSz, stats);
-    T *d_rout = (T *)moveToGPU((uint8_t *)k.rout, memSz, stats);
-    T *d_v = (T *)moveToGPU((uint8_t *)k.v, memSz, stats);
-    T *d_p = (T *)moveToGPU((uint8_t *)k.p, memSz, stats);
-    T *d_q = (T *)moveToGPU((uint8_t *)k.q, memSz, stats);
+    auto d_re = (T *)moveToGPU((uint8_t *)k.re, k.N * sizeof(T), stats);
+    auto d_rs = (T *)moveToGPU((uint8_t *)k.rs, k.N * sizeof(T), stats);
+    auto d_v = (T *)moveToGPU((uint8_t *)k.v, k.N * sizeof(T), stats);
+    auto d_p = (T *)moveToGPU((uint8_t *)k.p, k.N * sizeof(T), stats);
+    auto d_q = (T *)moveToGPU((uint8_t *)k.q, k.N * sizeof(T), stats);
     T *d_out = (T *)gpuMalloc(memSz);
 
     const int tb_size = 256;
-    selectForMaxpoolBackpropKernel<T><<<(k.N - 1) / tb_size + 1, tb_size>>>(p, d_oneHot,
-                                                                            d_incomingGrad, d_out, d_rb, d_rin, d_rout, d_v, d_p, d_q, party, p.bin, p.bwBackprop, k.N);
+    selectForMaxpoolBackpropKernel<T><<<(k.N - 1) / tb_size + 1, tb_size>>>(p, party, p.bin, p.bwBackprop, k.N, d_incomingGrad, d_oneHot, d_re, d_rs, d_v, d_p, d_q, d_out);
     checkCudaErrors(cudaDeviceSynchronize());
 
-    gpuFree(d_rb);
-    gpuFree(d_rin);
-    gpuFree(d_rout);
+    gpuFree(d_re);
+    gpuFree(d_rs);
     gpuFree(d_v);
     gpuFree(d_p);
     gpuFree(d_q);

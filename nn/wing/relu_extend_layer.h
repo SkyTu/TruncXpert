@@ -24,6 +24,7 @@
 #include "utils/gpu_comms.h"
 #include "fss/wing/gpu_relu.h"
 #include "gpu_layer.h"
+#include "fss/gpu_select.h"
 
 
 namespace wing
@@ -38,7 +39,7 @@ namespace wing
         // GPUReluExtendKey<T> reluExtendKey;
         u32 *drelu;
         u8 *dReluMask;
-        GPUSelectExtendKey<T> backpropSelectExtKey;
+        GPUSelectExtKey<T> backpropSelectExtKey;
         GPUSelectKey<T> backpropSelectKey;
         bool nextBackExt;
         // AESGlobalContext* gaes;

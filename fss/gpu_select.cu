@@ -25,6 +25,7 @@
 
 #include "gpu_fss_helper.h"
 #include "gpu_select.h"
+#include "wing/gpu_relu.h"
 #include "gpu_linear_helper.h"
 
 // select(b, x-p, 0) + q
@@ -136,106 +137,99 @@ TOut *gpuKeyGenSelect(uint8_t **key_as_bytes, int party, int N, TIn *d_maskX, TM
 }
 
 template <typename T, typename TMaskB>
-__global__ void keyGenSelectExtendKernel(int N, TMaskB *maskB, T *maskX, T *randomMaskOut, T *d_v, T *d_p, T *d_q, int bin, int bout)
+__global__ void keyGenSelectExtendKernel(T* inputMask, T* outputMask, TMaskB* rs, T* re, T* v, T* p, T* q, int bin, int bout, int N)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < N)
-    {
-        assert(maskB[i] == 0 || maskB[i] == 1);
-        d_v[i] = (1 - maskB[i]) * maskX[i] - randomMaskOut[i];
-        gpuMod(d_v[i], bout);
-        auto d_rmsb = gpuMsb(maskX[i], bin);
-        assert(d_rmsb == 0 || d_rmsb == 1);
-        d_p[i] = maskB[i] * d_rmsb * (1ULL << bin);
-        d_q[i] = (1 - maskB[i]) * d_rmsb * (1ULL << bin);
-        maskX[i] = maskX[i] - randomMaskOut[i] - randomMaskOut[i];
-        gpuMod(maskX[i], bout);
+    if(i < N){
+        assert(rs[i] == 0 || rs[i] == 1);
+        auto rmsb = gpuMsb(inputMask[i], bin);
+        v[i] = (1 - rs[i]) * inputMask[i] - outputMask[i];
+        gpuMod(v[i], bout);
+        p[i] = rs[i] * rmsb;
+        q[i] = (1 - rs[i]) * rmsb;
+        re[i] = inputMask[i] - outputMask[i] - outputMask[i];
+        gpuMod(re[i], bout);
     }
 }
 
 // if you don't have a random mask then the function returns one else it returns null
 template <typename T, typename TMaskB>
-T *gpuKeyGenSelectExtend(uint8_t **key_as_bytes, int bin, int bout, int party, int N, T *d_maskX, TMaskB *d_maskB, bool opMasked = true)
+T *gpuKeyGenSelectExtend(uint8_t **key_as_bytes, int bin, int bout, int party, int N, T *d_maskX, TMaskB *rs, bool opMasked = true)
 {
     // printf("bw=%d, T=%d\n", bw, sizeof(T));
     assert(bin <= 8 * sizeof(T));
     assert(bout <= 8 * sizeof(T));
     if (!d_maskX)
         d_maskX = randomGEOnGpu<T>(N, bin);
-    T *d_randomMaskOut = opMasked ? randomGEOnGpu<T>(N, bout) : NULL;
-    auto d_v = (T *)gpuMalloc(N * sizeof(T));
-    auto d_p = (T *)gpuMalloc(N * sizeof(T));
-    auto d_q = (T *)gpuMalloc(N * sizeof(T));
+    T *outputMask = opMasked ? randomGEOnGpu<T>(N, bout) : NULL;
+    T* re = (T*)gpuMalloc(N * sizeof(T));
+    T* v = (T*)gpuMalloc(N * sizeof(T));
+    T* p = (T*)gpuMalloc(N * sizeof(T));
+    T* q = (T*)gpuMalloc(N * sizeof(T));
+
     // printf("Bw=%d\n", bw);
-    keyGenSelectExtendKernel<<<(N - 1) / 256 + 1, 256>>>(N, d_maskB, d_maskX, d_randomMaskOut, d_v, d_p, d_q, bin, bout);
+    keyGenSelectExtendKernel<<<(N - 1) / 256 + 1, 256>>>(d_maskX, outputMask, rs, re, v, p, q, bin, bout, N);
     checkCudaErrors(cudaDeviceSynchronize());
-    writeShares<TMaskB, T>(key_as_bytes, party, N, d_maskB, bout);
-    writeShares<T, T>(key_as_bytes, party, N, d_maskX, bout);
-    writeShares<T, T>(key_as_bytes, party, N, d_randomMaskOut, bout);
-    writeShares<T, T>(key_as_bytes, party, N, d_v, bout);
-    writeShares<T, T>(key_as_bytes, party, N, d_p, bout);
-    writeShares<T, T>(key_as_bytes, party, N, d_q, bout);
-    gpuFree(d_v);
-    gpuFree(d_p);
-    gpuFree(d_q);
-    return d_randomMaskOut;
+    writeShares<T, T>(key_as_bytes, party, N, re, bout);
+    writeShares<u8, T>(key_as_bytes, party, N, rs, bout);
+    writeShares<T, T>(key_as_bytes, party, N, v, bout);
+    writeShares<T, T>(key_as_bytes, party, N, p, bout);
+    writeShares<T, T>(key_as_bytes, party, N, q, bout);
+    gpuFree(v);
+    gpuFree(p);
+    gpuFree(q);
+    gpuFree(re);
+    return outputMask;
 }
 
 
-// select(b, x-p, 0) + q
 template <typename T, u64 p, u64 q>
-__global__ void selectExtendKernel(u32 *X,
-                             T *Y, T *out,
-                             T *rb, T *rin,
-                             T *v, T *d_p, T *d_q, int party, int N, int bin, int bout)
+__global__ void selectExtendKernel(int party, int bin, int bout, int N, T* d_I, u32* d_dcf, T* d_re, T* d_rs, T* d_v, T* d_p, T* d_q, T* res)
 {
-    // 思考一下这个p和q究竟做什么作用？
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < N)
     {
+        d_I[i] = d_I[i] + (1ULL << (bin - 2));
+        gpuMod(d_I[i], bin);
+        auto t = (1ULL - gpuMsb(d_I[i], bin)) * (1ULL << bin);
         int laneId = threadIdx.x & 0x1f;
-        T x = ((X[i / 32] >> laneId) & 1ULL);
-        assert (x == 0 || x == 1);
-        T is_zero_x = (x == 0);
-        auto y = T(Y[i] - p) + (1ULL << (bin - 2));
-        gpuMod(y, bin);
-        // 之前这里没有乘以 2 的 m次方  
-        auto mx = (1 - gpuMsb(y, bin));
-        y = y - (1ULL << (bin - 2));
-        gpuMod(y, bout);
-        assert(mx == 0 || mx == 1);
-        if(is_zero_x){
-            out[i] = rb[i] * y + mx * d_p[i] + v[i] - rin[i];
+        auto dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
+        d_I[i] = d_I[i] - (1ULL << (bin - 2));
+        gpuMod(d_I[i], bout);
+        assert(dhat == 0 || dhat == 1);
+        
+        if(dhat){
+            res[i] = (T(party) - d_rs[i]) * d_I[i] + t * (d_q[i]) - d_v[i];
         }
         else{
-            out[i] = (party - rb[i]) * y + mx * d_q[i] - v[i];
+            res[i] = d_rs[i] * d_I[i] + t * d_p[i] + d_v[i] - d_re[i];
         }
+        gpuMod(res[i], bout);
     }
 }
 
 template <typename T, u64 p, u64 q>
-T *gpuSelectExtend(SigmaPeer *peer, int bin, int bout, int party, GPUSelectExtendKey<T> k, u32 *d_x,T *d_Y, Stats *s, bool opMasked = true)
+T *gpuSelectExtend(SigmaPeer *peer, int bin, int bout, int party, GPUSelectExtKey<T> k, u32 *d_dcf,T *d_I, Stats *s, bool opMasked = true)
 {
     // d_x 是d_drelu, d_Y是incoming grad
     assert(bin <= 8 * sizeof(T));
     assert(bout <= 8 * sizeof(T));
     size_t memSz = k.N * sizeof(T);
-    T *d_rb = (T *)moveToGPU((uint8_t *)k.rb, memSz, s);
-    T *d_re = (T *)moveToGPU((uint8_t *)k.re, memSz, s);
-    T *d_v = (T *)moveToGPU((uint8_t *)k.v, memSz, s);
-    T *d_p = (T *)moveToGPU((uint8_t *)k.p, memSz, s);
-    T *d_q = (T *)moveToGPU((uint8_t *)k.q, memSz, s);
+    auto d_re = (T *)moveToGPU((uint8_t *)k.re, k.N * sizeof(T), s);
+    auto d_rs = (T *)moveToGPU((uint8_t *)k.rs, k.N * sizeof(T), s);
+    auto d_v = (T *)moveToGPU((uint8_t *)k.v, k.N * sizeof(T), s);
+    auto d_p = (T *)moveToGPU((uint8_t *)k.p, k.N * sizeof(T), s);
+    auto d_q = (T *)moveToGPU((uint8_t *)k.q, k.N * sizeof(T), s);
     T *d_out = (T *)gpuMalloc(memSz);
     // printf("Doing select\n");
-    selectExtendKernel<T, p, q><<<(k.N - 1) / 256 + 1, 256>>>(d_x, d_Y, d_out, d_rb, d_re, d_v, d_p, d_q, party, k.N, bin, bout);
+    selectExtendKernel<T, p, q><<<(k.N - 1) / 256 + 1, 256>>>(party, bin, bout, k.N, d_I, d_dcf, d_re, d_rs, d_v, d_p, d_q, d_out);
     checkCudaErrors(cudaDeviceSynchronize());
     // printf("finished kernel\n");
     if (opMasked)
         peer->reconstructInPlace(d_out, bout, k.N, s);
-    gpuFree(d_rb);
     gpuFree(d_re);
+    gpuFree(d_v);
     gpuFree(d_p);
     gpuFree(d_q);
-    gpuFree(d_v);
     return d_out;
 }

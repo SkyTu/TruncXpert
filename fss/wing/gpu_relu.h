@@ -28,12 +28,6 @@
 namespace wing
 {
     template <typename T>
-    struct GPUSelectExtKey{
-        int N;
-        T *re, *rs, *v, *p, *q;
-    };
-
-    template <typename T>
     struct GPUReluZeroExtKey
     {
         int bin, bout, N;
@@ -65,23 +59,6 @@ namespace wing
         T *outMask;
     };
 
-    template <typename T>
-    GPUSelectExtKey<T> readGPUSelectExtKey(uint8_t** key_as_bytes, int N) {
-        GPUSelectExtKey<T> k;
-        k.N = N;
-        size_t memSz = N * sizeof(T);
-        k.re = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.rs = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.v = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.p = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        k.q = (T *) *key_as_bytes;
-        *key_as_bytes += memSz;
-        return k;
-    };
 
     GPUDReluKey readGPUDReluKey(u8 **key_as_bytes)
     {
