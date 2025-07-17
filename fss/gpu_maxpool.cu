@@ -461,10 +461,10 @@ __global__ void selectForMaxpoolBackpropKernel(MaxpoolParams p, int party, int b
         int c = t / (p.FH * p.FW);
 
         int j = n * p.H * p.W * p.C + h * p.W * p.C + w * p.C + c;
-        auto inp = d_I[j] + (1ULL << (bin - 2));
+        T inp = d_I[j] + (1ULL << (bin - 2));
         gpuMod(inp, bin);
-        auto tt = (1ULL - gpuMsb(inp, bin)) * (1ULL << bin);
-        auto dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
+        T tt = (1ULL - gpuMsb(inp, bin)) * (1ULL << bin);
+        T dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
         inp = inp - (1ULL << (bin - 2));
         gpuMod(inp, bout);
         assert(dhat == 0 || dhat == 1);
