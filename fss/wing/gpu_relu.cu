@@ -42,7 +42,7 @@ namespace wing
 
     template <typename T>
     T* gpuKeyGenSelectExt(uint8_t** key_as_bytes, int party, int bin, int bout, int N, u8* rs, T* inputMask){
-        auto outputMask = randomGEOnGpu<T>(N, bout);
+        T* outputMask = randomGEOnGpu<T>(N, bout);
         T* re = (T*)gpuMalloc(N * sizeof(T));
         T* v = (T*)gpuMalloc(N * sizeof(T));
         T* p = (T*)gpuMalloc(N * sizeof(T));

@@ -21,7 +21,7 @@
 
 #include "utils/gpu_data_types.h"
 #include "utils/gpu_random.h"
-#include "wing/gpu_relu.h"
+#include "fss/gpu_select.h"
 #include "gpu_relu.h"
 
 template <typename T>
@@ -717,9 +717,9 @@ T *keyGenMaxpoolBackProp(uint8_t **key_as_bytes, int party, MaxpoolParams p, u8 
     int outSz = p.N * p.H * p.W * p.C * p.FH * p.FW;
     auto d_expandedGradMask = (T *)gpuMalloc(outSz * sizeof(T));
     expandKernel<<<(outSz - 1) / 256 + 1, 256>>>(p, d_incomingGradMask, d_expandedGradMask, outSz);
-    auto d_randomMaskOut = gpuKeyGenSelectExtend<T, u8>(key_as_bytes, p.bin, p.bwBackprop, party, outSz, d_expandedGradMask, d_oneHotMask);
+    auto d_randomMaskOut = wing::gpuKeyGenSelectExt<T>(key_as_bytes, party, p.bin, p.bwBackprop, outSz, d_oneHotMask, d_expandedGradMask);
     gpuFree(d_expandedGradMask);
-    auto d_outgoingGradMask = gpuCollectGradients(p, d_randomMaskOut, NULL);
+    auto d_outgoingGradMask = gpuCollectGradients<T>(p, d_randomMaskOut, NULL);
     gpuFree(d_randomMaskOut);
     return d_outgoingGradMask;
 }
