@@ -461,19 +461,19 @@ __global__ void selectForMaxpoolBackpropKernel(MaxpoolParams p, int party, int b
         int c = t / (p.FH * p.FW);
 
         int j = n * p.H * p.W * p.C + h * p.W * p.C + w * p.C + c;
-        d_I[i] = d_I[i] + (1ULL << (bin - 2));
-        gpuMod(d_I[i], bin);
-        auto tt = (1ULL - gpuMsb(d_I[i], bin)) * (1ULL << bin);
+        auto inp = d_I[j] + (1ULL << (bin - 2));
+        gpuMod(inp[i], bin);
+        auto tt = (1ULL - gpuMsb(inp[i], bin)) * (1ULL << bin);
         auto dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
-        d_I[i] = d_I[i] - (1ULL << (bin - 2));
-        gpuMod(d_I[i], bout);
+        inp = inp - (1ULL << (bin - 2));
+        gpuMod(inp, bout);
         assert(dhat == 0 || dhat == 1);
         
         if(dhat){
-            res[i] = (T(party) - d_rs[i]) * d_I[i] + tt * (d_q[i]) - d_v[i];
+            res[i] = (T(party) - d_rs[i]) * inp + tt * (d_q[i]) - d_v[i];
         }
         else{
-            res[i] = d_rs[i] * d_I[i] + tt * d_p[i] + d_v[i] - d_re[i];
+            res[i] = d_rs[i] * inp + tt * d_p[i] + d_v[i] - d_re[i];
         }
         gpuMod(res[i], bout);
     }
