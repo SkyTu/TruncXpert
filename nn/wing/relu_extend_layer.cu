@@ -54,7 +54,6 @@ namespace wing
     template <typename T>
     T *ReluExtendLayer<T>::genForwardKey(u8 **key_as_bytes, int party, T *d_inputMask, AESGlobalContext *gaes)
     {
-        std::cout << "Generating forward key for reluExt" << std::endl;
         auto res = wing::gpuKeyGenReluZeroExt(key_as_bytes, party, bin, bout, numRelus, d_inputMask, gaes);
         // auto res = gpuKeygenReluExtend(key_as_bytes, party, bin, bout, numRelus, d_inputMask, gaes);
         auto d_dreluMask = res.first;
@@ -62,7 +61,6 @@ namespace wing
         if (this->train)
             moveIntoCPUMem((u8 *)dReluMask, (u8 *)d_dreluMask, numRelus, NULL);
         gpuFree(d_dreluMask);
-        std::cout << "Finish generating forward key for MaxPool2DLayer" << std::endl;
         return d_randomOutMask;
     }
 
@@ -72,7 +70,6 @@ namespace wing
         this->checkIfTrain();
         auto d_dreluMask = (u8 *)moveToGPU((u8 *)dReluMask, numRelus, NULL);
         // 如果ReLU反传时候下一层能够扩环，那可以确定就是MaxPool2D，则这一层没必要扩环，也不需要截断，直接进行select即可，而且位长应当保持为bin
-        std::cout << "Generating backward key for reluExt" << std::endl;
         T * d_outgoingGradMask;
         if (this->nextBackExt)
         {
@@ -81,7 +78,6 @@ namespace wing
         else{
             d_outgoingGradMask = gpuKeyGenSelectExt<T>(key_as_bytes, party, bin, bout, numRelus, d_dreluMask, d_incomingGradMask);
         }
-        std::cout << "Finish generating backward key for reluExt" << std::endl;
         // auto d_outgoingGradMask = gpuKeyGenSelect<T, T, u8>(key_as_bytes, party, numRelus, d_incomingGradMask, d_dreluMask, bout);
         gpuFree(d_incomingGradMask);
         gpuFree(d_dreluMask);
@@ -138,7 +134,6 @@ namespace wing
             d_selectOutput = gpuSelect<T, T, 0, 0>(peer, party, bin, backpropSelectKey, d_drelu, d_incomingGrad, &(this->s));
         }
         else{
-            std::cout << "SelectExtend" << std::endl;
             d_selectOutput = gpuSelectExtend<T, 0, 0>(peer, bin, bout, party, backpropSelectExtKey, d_drelu, d_incomingGrad, &(this->s));
         }
         gpuFree(d_drelu);

@@ -600,7 +600,6 @@ T *gpuSelectForMaxpoolBackpropOrca(MaxpoolParams p, GPUSelectKey<T> k,
     d_d2 = d_d1 + k.N;
 
     const int tb_size = 256;
-    std::cout << "Call selectForMaxpoolBackpropKernelOrca" << std::endl;
     selectForMaxpoolBackpropKernelOrca<T><<<(k.N - 1) / tb_size + 1, tb_size>>>(p, d_oneHot,
                                                                             d_incomingGrad, d_out, d_a, d_b, d_c, d_d1, d_d2, party, k.N);
     checkCudaErrors(cudaDeviceSynchronize());
@@ -717,7 +716,7 @@ T *keyGenMaxpoolBackProp(uint8_t **key_as_bytes, int party, MaxpoolParams p, u8 
     int outSz = p.N * p.H * p.W * p.C * p.FH * p.FW;
     auto d_expandedGradMask = (T *)gpuMalloc(outSz * sizeof(T));
     expandKernel<<<(outSz - 1) / 256 + 1, 256>>>(p, d_incomingGradMask, d_expandedGradMask, outSz);
-    auto d_randomMaskOut = wing::gpuKeyGenSelectExt<T>(key_as_bytes, party, p.bin, p.bwBackprop, outSz, d_oneHotMask, d_expandedGradMask);
+    auto d_randomMaskOut = gpuKeyGenSelectExt<T>(key_as_bytes, party, p.bin, p.bwBackprop, outSz, d_oneHotMask, d_expandedGradMask);
     gpuFree(d_expandedGradMask);
     auto d_outgoingGradMask = gpuCollectGradients<T>(p, d_randomMaskOut, NULL);
     gpuFree(d_randomMaskOut);

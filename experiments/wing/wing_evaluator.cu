@@ -610,7 +610,7 @@ int main(int argc, char *argv[])
     else if (experiment.compare("P-SecureML-Train") == 0)
     {
         int epochs = 2;
-        int blocks = 46;
+        int blocks = 78;
         int blockSz = 10;
         int batchSz = 128;
         evaluatorE2EFakeOffline("P-SecureML", "mnist", party, ip, "weights/PSecureMlNoRelu.dat", false, epochs, blocks, blockSz, batchSz, 28, 28, 1, false, true, keyDir);   

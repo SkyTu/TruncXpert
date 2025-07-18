@@ -152,29 +152,36 @@ __global__ void keyGenSelectExtendKernel(T* inputMask, T* outputMask, TMaskB* rs
     }
 }
 
-// if you don't have a random mask then the function returns one else it returns null
-template <typename T, typename TMaskB>
-T *gpuKeyGenSelectExtend(uint8_t **key_as_bytes, int bin, int bout, int party, int N, T *d_maskX, TMaskB *rs, bool opMasked = true)
-{
-    // printf("bw=%d, T=%d\n", bw, sizeof(T));
-    assert(bin <= 8 * sizeof(T));
-    assert(bout <= 8 * sizeof(T));
-    if (!d_maskX)
-        d_maskX = randomGEOnGpu<T>(N, bin);
-    T *outputMask = opMasked ? randomGEOnGpu<T>(N, bout) : NULL;
+template <typename T>
+__global__ void genSelectExtKernel(T* inputMask, T* outputMask, u8* rs, T* re, T* v, T* p, T* q, int bin, int bout, int N){
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if(i < N){
+        assert(rs[i] == 0 || rs[i] == 1);
+        auto rmsb = gpuMsb(inputMask[i], bin);
+        v[i] = (1 - rs[i]) * inputMask[i] - outputMask[i];
+        gpuMod(v[i], bout);
+        p[i] = rs[i] * rmsb;
+        q[i] = (1 - rs[i]) * rmsb;
+        re[i] = inputMask[i] - outputMask[i] - outputMask[i];
+        gpuMod(re[i], bout);
+    }
+}
+
+template <typename T>
+T* gpuKeyGenSelectExt(uint8_t** key_as_bytes, int party, int bin, int bout, int N, u8* rs, T* inputMask){
+    T* outputMask = randomGEOnGpu<T>(N, bout);
     T* re = (T*)gpuMalloc(N * sizeof(T));
     T* v = (T*)gpuMalloc(N * sizeof(T));
     T* p = (T*)gpuMalloc(N * sizeof(T));
     T* q = (T*)gpuMalloc(N * sizeof(T));
-
-    // printf("Bw=%d\n", bw);
-    keyGenSelectExtendKernel<<<(N - 1) / 256 + 1, 256>>>(d_maskX, outputMask, rs, re, v, p, q, bin, bout, N);
-    checkCudaErrors(cudaDeviceSynchronize());
+    
+    genSelectExtKernel<<<(N - 1) / 256 + 1, 256>>>(inputMask, outputMask, rs, re, v, p, q, bin, bout, N);
     writeShares<T, T>(key_as_bytes, party, N, re, bout);
     writeShares<u8, T>(key_as_bytes, party, N, rs, bout);
     writeShares<T, T>(key_as_bytes, party, N, v, bout);
     writeShares<T, T>(key_as_bytes, party, N, p, bout);
     writeShares<T, T>(key_as_bytes, party, N, q, bout);
+    
     gpuFree(v);
     gpuFree(p);
     gpuFree(q);
