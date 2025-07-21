@@ -1,3 +1,5 @@
+
+
 // 
 // Copyright:
 // 
@@ -194,7 +196,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     // automatically truncates by scale
@@ -330,7 +332,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     // automatically truncates by scale
@@ -502,7 +504,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     LlamaConfig::party = party + 2;
@@ -591,26 +593,26 @@ int main(int argc, char *argv[])
         int blocks = 78;
         int blockSz = 10; // 600
         int batchSz = 64;
-        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3-2e.dat", true, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
+        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3.dat", false, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
     }
     else if (experiment.compare("CNN3-WING") == 0){
         int epochs = 2;
         int blocks = 78;
         int blockSz = 10; // 600
         int batchSz = 64;
-        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3-2e.dat", true, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
+        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3.dat", false, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
     }
     else if (experiment.compare("CNN3-FLOAT") == 0){
         int epochs = 2;
         int blocks = 78;
         int blockSz = 10;
         int batchSz = 64;
-        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3-2e.dat", true, epochs, blocks, blockSz, batchSz, 32, 32, 3, true, true, keyDir);
+        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3.dat", false, epochs, blocks, blockSz, batchSz, 32, 32, 3, true, true, keyDir);
     }
     else if (experiment.compare("P-SecureML-Train") == 0)
     {
         int epochs = 2;
-        int blocks = 78;
+        int blocks = 46;
         int blockSz = 10;
         int batchSz = 128;
         evaluatorE2EFakeOffline("P-SecureML", "mnist", party, ip, "weights/PSecureMlNoRelu.dat", false, epochs, blocks, blockSz, batchSz, 28, 28, 1, false, true, keyDir);   
@@ -671,3 +673,4 @@ int main(int argc, char *argv[])
     }
     return 0;
 }
+

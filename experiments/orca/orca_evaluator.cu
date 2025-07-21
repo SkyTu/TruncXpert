@@ -189,7 +189,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     // automatically truncates by scale
@@ -325,7 +325,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     // automatically truncates by scale
@@ -494,7 +494,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     LlamaConfig::party = party + 2;
