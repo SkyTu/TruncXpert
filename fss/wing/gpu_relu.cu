@@ -264,9 +264,13 @@ namespace wing
     std::pair<u32 *, T *> gpuReluZeroExt(SigmaPeer *peer, int party, GPUReluZeroExtKey<T> k, T *d_I, AESGlobalContext *g, Stats *s, bool reconstruct=true)
     {
         std::vector<u32 *> h_mask({k.dReluKey.mask});
+        std::cout << "Begin GPU DCF for relu zero extension" << std::endl;
         auto d_dcf = dpf::gpuDcf<T, 1, dpf::dReluPrologue<0>, dpf::dReluEpilogue<0, false>>(k.dReluKey.dpfKey, party, d_I, g, s, &h_mask);
+        std::cout << "Finish GPU DCF for relu zero extension" << std::endl;
         peer->reconstructInPlace(d_dcf, 1, k.N, s); 
+        std::cout << "Begin GPU Relu Zero Extension Mux" << std::endl;
         auto d_relu = gpuReluZeroExtMux(party, k.bin, k.bout, k.N, k.selectKey, d_I, d_dcf, s);
+        std::cout << "Finish GPU Relu Zero Extension Mux" << std::endl;
         if (reconstruct)
             peer->reconstructInPlace(d_relu, k.bout, k.N, s);
         return std::make_pair(d_dcf, d_relu);

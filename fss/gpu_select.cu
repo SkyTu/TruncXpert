@@ -25,7 +25,6 @@
 
 #include "gpu_fss_helper.h"
 #include "gpu_select.h"
-#include "wing/gpu_relu.h"
 #include "gpu_linear_helper.h"
 
 // select(b, x-p, 0) + q

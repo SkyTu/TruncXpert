@@ -137,16 +137,15 @@ void SigmaPeer::exchangeShares(u8 *to_send, size_t bytes, Stats *s)
     cv.notify_one();
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = end - start;
-    std::cout << "Time to exchange shares in ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << std::endl;
+    // std::cout << "Time to exchange shares in ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << std::endl;
     start = std::chrono::high_resolution_clock::now();
     recvBytes(h_bufA1, bytes);
     end = std::chrono::high_resolution_clock::now();
     elapsed = end - start;
-    std::cout << "Time to receive shares in ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << std::endl;
+    // std::cout << "Time to receive shares in ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << std::endl;
     // send
     while (sendHasWork)
     {
-        std::cout << "Waiting for send thread to finish..." << std::endl;
     }
     // res.get();
     // send_thread.join();

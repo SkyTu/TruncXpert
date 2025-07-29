@@ -52,7 +52,7 @@ extern "C" void initGPUMemPool()
     uint64_t threshold = UINT64_MAX;
     checkCudaErrors(cudaMemPoolSetAttribute(mempool, cudaMemPoolAttrReleaseThreshold, &threshold));
     uint64_t *d_dummy_ptr;
-    uint64_t bytes = 3 * (1ULL << 30);
+    uint64_t bytes = 20 * (1ULL << 30);
     checkCudaErrors(cudaMallocAsync(&d_dummy_ptr, bytes, 0));
     checkCudaErrors(cudaFreeAsync(d_dummy_ptr, 0));
     checkCudaErrors(cudaDeviceSynchronize());
