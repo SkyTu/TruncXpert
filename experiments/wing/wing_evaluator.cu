@@ -1,3 +1,5 @@
+
+
 // 
 // Copyright:
 // 
@@ -49,6 +51,7 @@
 #include <sytorch/backend/llama_base.h>
 
 #include "cuda_runtime_api.h"
+#include "utils/wan_config.h"
 
 u64 *gpuSoftmax(int batchSz, int numClasses, int iteration, int party, SigmaPeer *peer, u64 *d_I, u64 *labels, bool secfloat, LlamaBase<u64> *llama)
 {
@@ -75,9 +78,9 @@ u64 *gpuSoftmax(int batchSz, int numClasses, int iteration, int party, SigmaPeer
             softmaxOp(img, c, 0, 0) -= (labels[numClasses * img + c] * ((1ULL << (wing::global::scale + wing::global::extra_shift)) / batchSz));
         }
     }
-    std::cout << "Before reconstruct in GPU softmax" << std::endl;
+    // std::cout << "Before reconstruct in GPU softmax" << std::endl;
     reconstruct(inp.d1 * inp.d2, softmaxOp.data, 64);
-    std::cout << "After reconstruct in GPU softmax" << std::endl;
+    // std::cout << "After reconstruct in GPU softmax" << std::endl;
     d_I = (u64 *)moveToGPU((u8 *)softmaxOp.data, memSz, NULL);
     return d_I;
 }
@@ -90,23 +93,23 @@ void trainModel(wing::GPUModel<u64> *m, u8 **keyBuf, int party, SigmaPeer *peer,
     u64 *d_O;
     for (int i = 0; i < m->layers.size(); i++)
     {
-        std::cout << "Read Key Layer " << i << " begin" << std::endl;
+        // std::cout << "Read Key Layer " << i << " begin" << std::endl;
         m->layers[i]->readForwardKey(keyBuf);
-        std::cout << "Layer " << i << " begin" << std::endl;
+        // std::cout << "Layer " << i << " begin" << std::endl;
         d_O = m->layers[i]->forward(peer, party, d_I, g);
-        std::cout << "Layer " << i << " done" << std::endl;
+        // std::cout << "Layer " << i << " done" << std::endl;
         if (d_O != d_I)
             gpuFree(d_I);
         d_I = d_O;
     }
     checkCudaErrors(cudaDeviceSynchronize());
     d_I = gpuSoftmax(m->batchSz, m->classes, iteration, party, peer, d_I, labels, secfloat, llama);
-    std::cout << "Softmax finished" << std::endl;
+    // std::cout << "Softmax finished" << std::endl;
     for (int i = m->layers.size() - 1; i >= 0; i--)
     {
         m->layers[i]->readBackwardKey(keyBuf, epoch);
         d_I = m->layers[i]->backward(peer, party, d_I, g, epoch);
-        std::cout << "Layer " << i << " backward done" << std::endl;
+        // std::cout << "Layer " << i << " backward done" << std::endl;
     }
 }
 
@@ -118,11 +121,11 @@ void trainModelPerf(wing::GPUModel<u64> *m, u8 **keyBuf, int party, SigmaPeer *p
     u64 *d_O;
     for (int i = 0; i < m->layers.size(); i++)
     {
-        std::cout << "Read Key Layer " << i << " begin" << std::endl;
+        // std::cout << "Read Key Layer " << i << " begin" << std::endl;
         m->layers[i]->readForwardKey(keyBuf);
-        std::cout << "Layer " << i << " begin" << std::endl;
+        // std::cout << "Layer " << i << " begin" << std::endl;
         d_O = m->layers[i]->forward(peer, party, d_I, g);
-        std::cout << "Layer " << i << " done" << std::endl;
+        // std::cout << "Layer " << i << " done" << std::endl;
         if (d_O != d_I)
             gpuFree(d_I);
         d_I = d_O;
@@ -133,12 +136,12 @@ void trainModelPerf(wing::GPUModel<u64> *m, u8 **keyBuf, int party, SigmaPeer *p
     auto computeEnd = std::chrono::high_resolution_clock::now();
     float_softmax_time += std::chrono::duration_cast<std::chrono::milliseconds>(computeEnd - computeStart).count();
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(computeEnd - computeStart).count() << std::endl;
-    std::cout << "Softmax finished" << std::endl;
+    // std::cout << "Softmax finished" << std::endl;
     for (int i = m->layers.size() - 1; i >= 0; i--)
     {
         m->layers[i]->readBackwardKey(keyBuf, epoch);
         d_I = m->layers[i]->backward(peer, party, d_I, g, epoch);
-        std::cout << "Layer " << i << " backward done" << std::endl;
+        // std::cout << "Layer " << i << " backward done" << std::endl;
     }
 }
 
@@ -194,7 +197,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     // automatically truncates by scale
@@ -228,7 +231,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
             // Open the key file for reading
             // uncomment for end to end run
             peer->sync();
-            auto startComm = peer->bytesSent() + peer->bytesReceived();
+            auto startComm = peer->bytesReceived();
             auto start = std::chrono::high_resolution_clock::now();
             for (int j = 0; j < blockSz; j++)
             {
@@ -247,7 +250,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             onlineTime += elapsed;
             printf("Online time (ms): %lu\n", elapsed.count());
-            auto endComm = peer->bytesSent() + peer->bytesReceived();
+            auto endComm = peer->bytesReceived();
             commBytes += (endComm - startComm);
             std::pair<double, double> res;
             m->dumpWeights(weightsDir + "masked_weights_" + std::to_string(party) + "_" + std::to_string(l) + "_" + std::to_string(k) + "_" + std::to_string(blockSz-1) + ".dat");
@@ -294,6 +297,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
 
 void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int party, std::string ip, std::string weightsFile, bool floatWeights, int epochs, int blocks, int blockSz, int batchSz, int H, int W, int C, bool secfloat, bool momentum, std::string keyDir, int device = 0)
 {
+    WanParameter wanParams;
     AESGlobalContext g;
     initAESContext(&g);    
     initGPURandomness();
@@ -330,7 +334,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     // automatically truncates by scale
@@ -374,7 +378,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
         for (int k = 0; k < blocks; k++)
         {            
             peer->sync();
-            auto startComm = peer->bytesSent() + peer->bytesReceived();
+            auto startComm = peer->bytesReceived();
             auto start = std::chrono::high_resolution_clock::now();
             lseek(fd, 0, SEEK_SET);
             for (int j = 0; j < blockSz; j++)
@@ -394,7 +398,8 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             onlineTime += elapsed;
             printf("Online time (ms): %lu\n", elapsed.count());
-            auto endComm = peer->bytesSent() + peer->bytesReceived();
+            auto endComm = peer->bytesReceived();
+            std::cout << "bytes sent=" << peer->bytesSent() << ", bytes received=" << peer->bytesReceived() << std::endl;
             commBytes += (endComm - startComm);
             std::pair<double, double> res;
             m->dumpWeights(weightsDir + "masked_weights_" + std::to_string(party) + "_" + std::to_string(l) + "_" + std::to_string(k) + "_" + std::to_string(blockSz-1) + ".dat");
@@ -455,15 +460,22 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
 
     LlamaConfig::peer->close();
     int iterations = epochs * blocks * blockSz;
+    commBytes += inputOnlineComm;
     commBytes += secFloatComm;
+    
+    std::cout << numRounds << " rounds, inputOnlineComm=" <<  std::endl;
+    // add the wan_time of softmax
+    wan_time += numRounds * wanParams.rtt;
+    wan_time += (inputOnlineComm + secFloatComm) / (wanParams.comm_bytes_per_ms);
+    
     std::ofstream stats(trainingDir + expName + ".txt");
     auto statsString = "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(secFloatComm);
-
+    statsString += "\nWan extra time taken (ms)" + std::to_string(wan_time);
     auto avgKeyReadTime = (double)keyReadTime / (double)iterations;
     auto avgComputeTime = (double)computeTime.count() / (double)iterations;
-
     double commPerIt = (double)commBytes / (double)iterations;
-    statsString += "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTime);
+    auto wan_extra_time = (double)wan_time / (double)iterations;
+    statsString += "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTime) + "\nAvg wan extra time (ms)" + std::to_string(wan_extra_time);
     statsString += "\nComm per iteration (B): " + std::to_string(commPerIt);
     stats << statsString;
     stats.close();
@@ -477,6 +489,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
 
 void evaluatorPerf(std::string modelName, std::string dataset, int party, std::string ip, int iterations, int batchSz, int H, int W, int C, bool secfloat, bool momentum, std::string keyDir)
 {
+    WanParameter wanParams;
     AESGlobalContext g;
     initAESContext(&g);
     initGPUMemPool();
@@ -502,7 +515,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
     curKeyBuf = keyBuf1;
     nextKeyBuf = keyBuf2;
 
-    SigmaPeer *peer = new GpuPeer(false);
+    SigmaPeer *peer = new GpuPeer(true);
     LlamaBase<u64> *llama = nullptr;
 
     LlamaConfig::party = party + 2;
@@ -523,7 +536,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
     uint64_t keyReadTime = 0;
     size_t commBytes = 0;
     int fd = openForReading(keyFile);
-    auto startComm = peer->bytesSent() + peer->bytesReceived();
+    auto startComm = peer->bytesReceived();
     auto start = std::chrono::high_resolution_clock::now();
     int float_softmax_time = 0;
     for (int j = 0; j < iterations; j++)
@@ -539,23 +552,31 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
     auto end = std::chrono::high_resolution_clock::now();
     onlineTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     printf("Online time (ms): %lu\n", onlineTime.count());
-    auto endComm = peer->bytesSent() + peer->bytesReceived();
+    auto endComm = peer->bytesReceived();
     commBytes += (endComm - startComm);
     close(fd);
+    commBytes += inputOnlineComm;
     commBytes += secFloatComm;
+    std::cout << "bytes sent=" << peer->bytesSent() << ", bytes received=" << peer->bytesReceived() << std::endl;
+            
+    // add the wan_time of softmax
+    wan_time += numRounds * wanParams.rtt;
+    wan_time += (inputOnlineComm + secFloatComm) / (wanParams.comm_bytes_per_ms);
+    
     LlamaConfig::peer->close();
     std::ofstream stats(trainingDir + modelName + ".txt");
     auto statsString = "\n" + modelName + "\n";
     statsString += "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(secFloatComm);
-    statsString += "FLoat SoftMax time take (ms): " + std::to_string(float_softmax_time) + "\n";
+    statsString += "\nWan extra time taken (ms)" + std::to_string(wan_time);
+    statsString += "\nFLoat SoftMax time take (ms): " + std::to_string(inputOnlineComm + secFloatComm) + "\n";
     statsString += "\nIterations: " + std::to_string(iterations) + "\n";
     auto totTimeByIt = (double)onlineTime.count() / (double)(iterations - 1);
     auto avgKeyReadTime = (double)keyReadTime / (double)iterations;
     auto avgComputeTIme = (double)computeTime.count() / (double)iterations;
-
+    auto wan_extra_time = (double)wan_time / (double)iterations;
     double commPerIt = (double)commBytes / (double)iterations;
-    statsString += "\nTotal time / iterations (ms): " + std::to_string(totTimeByIt) + "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTIme);
-    statsString += "\nComm per iteration (B): " + std::to_string(commPerIt) + "\n";
+    statsString += "\nTotal time / iterations (ms): " + std::to_string(totTimeByIt) + "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTIme) + "\nAvg wan extra time (ms): " + std::to_string(wan_extra_time);
+    statsString += "\nComm per iteration (B): " + std::to_string(commPerIt) + "\n";  
     stats << statsString;
     stats.close();
     std::cout << statsString << std::endl;
@@ -565,6 +586,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
 }
 
 int global_device = 0;
+int wan_time = 0;
 
 int main(int argc, char *argv[])
 {
@@ -591,21 +613,21 @@ int main(int argc, char *argv[])
         int blocks = 78;
         int blockSz = 10; // 600
         int batchSz = 64;
-        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3-2e.dat", true, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
+        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3.dat", false, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
     }
     else if (experiment.compare("CNN3-WING") == 0){
         int epochs = 2;
         int blocks = 78;
         int blockSz = 10; // 600
         int batchSz = 64;
-        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3-2e.dat", true, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
+        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3.dat", false, epochs, blocks, blockSz, batchSz, 32, 32, 3, false, true, keyDir);
     }
     else if (experiment.compare("CNN3-FLOAT") == 0){
         int epochs = 2;
         int blocks = 78;
         int blockSz = 10;
         int batchSz = 64;
-        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3-2e.dat", true, epochs, blocks, blockSz, batchSz, 32, 32, 3, true, true, keyDir);
+        evaluatorE2EFakeOffline("CNN3", "cifar10", party, ip, "weights/CNN3.dat", false, epochs, blocks, blockSz, batchSz, 32, 32, 3, true, true, keyDir);
     }
     else if (experiment.compare("P-SecureML-Train") == 0)
     {
@@ -671,3 +693,4 @@ int main(int argc, char *argv[])
     }
     return 0;
 }
+

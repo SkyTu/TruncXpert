@@ -21,7 +21,7 @@
 
 #include "utils/gpu_data_types.h"
 #include "utils/gpu_random.h"
-#include "wing/gpu_relu.h"
+#include "fss/gpu_select.h"
 #include "gpu_relu.h"
 
 template <typename T>
@@ -461,19 +461,19 @@ __global__ void selectForMaxpoolBackpropKernel(MaxpoolParams p, int party, int b
         int c = t / (p.FH * p.FW);
 
         int j = n * p.H * p.W * p.C + h * p.W * p.C + w * p.C + c;
-        d_I[i] = d_I[i] + (1ULL << (bin - 2));
-        gpuMod(d_I[i], bin);
-        auto tt = (1ULL - gpuMsb(d_I[i], bin)) * (1ULL << bin);
-        auto dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
-        d_I[i] = d_I[i] - (1ULL << (bin - 2));
-        gpuMod(d_I[i], bout);
+        T inp = d_I[j] + (1ULL << (bin - 2));
+        gpuMod(inp, bin);
+        T tt = (1ULL - gpuMsb(inp, bin)) * (1ULL << bin);
+        T dhat = ((d_dcf[i / 32] >> laneId) & 1ULL);
+        inp = inp - (1ULL << (bin - 2));
+        gpuMod(inp, bout);
         assert(dhat == 0 || dhat == 1);
         
         if(dhat){
-            res[i] = (T(party) - d_rs[i]) * d_I[i] + tt * (d_q[i]) - d_v[i];
+            res[i] = (T(party) - d_rs[i]) * inp + tt * (d_q[i]) - d_v[i];
         }
         else{
-            res[i] = d_rs[i] * d_I[i] + tt * d_p[i] + d_v[i] - d_re[i];
+            res[i] = d_rs[i] * inp + tt * d_p[i] + d_v[i] - d_re[i];
         }
         gpuMod(res[i], bout);
     }
@@ -600,7 +600,6 @@ T *gpuSelectForMaxpoolBackpropOrca(MaxpoolParams p, GPUSelectKey<T> k,
     d_d2 = d_d1 + k.N;
 
     const int tb_size = 256;
-    std::cout << "Call selectForMaxpoolBackpropKernelOrca" << std::endl;
     selectForMaxpoolBackpropKernelOrca<T><<<(k.N - 1) / tb_size + 1, tb_size>>>(p, d_oneHot,
                                                                             d_incomingGrad, d_out, d_a, d_b, d_c, d_d1, d_d2, party, k.N);
     checkCudaErrors(cudaDeviceSynchronize());
@@ -717,9 +716,9 @@ T *keyGenMaxpoolBackProp(uint8_t **key_as_bytes, int party, MaxpoolParams p, u8 
     int outSz = p.N * p.H * p.W * p.C * p.FH * p.FW;
     auto d_expandedGradMask = (T *)gpuMalloc(outSz * sizeof(T));
     expandKernel<<<(outSz - 1) / 256 + 1, 256>>>(p, d_incomingGradMask, d_expandedGradMask, outSz);
-    auto d_randomMaskOut = gpuKeyGenSelectExtend<T, u8>(key_as_bytes, p.bin, p.bwBackprop, party, outSz, d_expandedGradMask, d_oneHotMask);
+    auto d_randomMaskOut = gpuKeyGenSelectExt<T>(key_as_bytes, party, p.bin, p.bwBackprop, outSz, d_oneHotMask, d_expandedGradMask);
     gpuFree(d_expandedGradMask);
-    auto d_outgoingGradMask = gpuCollectGradients(p, d_randomMaskOut, NULL);
+    auto d_outgoingGradMask = gpuCollectGradients<T>(p, d_randomMaskOut, NULL);
     gpuFree(d_randomMaskOut);
     return d_outgoingGradMask;
 }
