@@ -62,6 +62,7 @@ public:
     uint64_t softmax_comm_bytes = 0;
     uint64_t layernorm_comm_bytes = 0;
     uint64_t truncate_comm_bytes = 0;
+    uint64_t wan_time = 0;
 
     void reset()
     {

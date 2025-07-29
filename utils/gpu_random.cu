@@ -137,7 +137,6 @@ void initCPURandomness()
 {
   const unsigned long long offset = 0ULL;
   const unsigned long long seed = 1234567890ULL;
-  int device;
   checkCudaErrors(cudaSetDevice(global_device));
   printf("CPU randomness, seed: %llu, offset: %llu\n", seed, offset);
   CURAND_CHECK(curandCreateGeneratorHost(&(cpuGen[global_device]), CURAND_RNG_PSEUDO_XORWOW));

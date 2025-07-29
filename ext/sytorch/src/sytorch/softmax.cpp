@@ -40,7 +40,9 @@ void softmax_secfloat(Tensor4D<u64> &in, Tensor4D<u64> &out, u64 scale, int llam
     assert(in.d4 == 1);
     assert(out.d3 == 1);
     assert(out.d4 == 1);
-
+    auto secfloat_start = std::chrono::high_resolution_clock::now();
+    auto secfloat_comm_start = __get_comm();
+    auto secfloat_round_start = __iopack->get_rounds();
     Tensor4D<u64> inFloat(in.d1, in.d2, 4, 1);
     // This hack only works when last layer is truncation layer, which is usually the case
     int origBitlength = LlamaConfig::bitlength;
@@ -62,10 +64,7 @@ void softmax_secfloat(Tensor4D<u64> &in, Tensor4D<u64> &out, u64 scale, int llam
         }
         vector < vector < FPArray > > outFloatSecfloat = make_vector_float(llamaParty-1, in.d1, in.d2);
 
-        // std::cerr << ">> Softmax (SecFloat) - Start" << std::endl;
-        auto secfloat_start = std::chrono::high_resolution_clock::now();
-        auto secfloat_comm_start = __get_comm();
-        auto secfloat_round_start = __iopack->get_rounds();
+        // std::cerr << ">> Softmax (SecFloat) - Start" << std::endl;        
 
         Softmax2(in.d1, in.d2, inpFloatSecfloat, outFloatSecfloat);
         int sz = in.d1 * in.d2;
@@ -83,13 +82,6 @@ void softmax_secfloat(Tensor4D<u64> &in, Tensor4D<u64> &out, u64 scale, int llam
             divver[i] = __fp_op->input<float>(ALICE, sz, (float)(1.0/(float)in.d1)) ;
         ElemWiseMul(in.d1 * in.d2, outFloatSecfloatFlat, divver, outFloatSecfloatFlat);
 
-        auto secfloat_round_end = __iopack->get_rounds();
-        auto secfloat_comm_end = __get_comm();
-        auto secfloat_end = std::chrono::high_resolution_clock::now();
-        auto eval_time = std::chrono::duration_cast<std::chrono::microseconds>(secfloat_end - secfloat_start).count();
-        evalMicroseconds += eval_time;
-        secFloatComm += (uint64_t)(secfloat_comm_end - secfloat_comm_start);
-        numRounds += (secfloat_round_end - secfloat_round_start);
         // std::cerr << "   Online Time = " << eval_time / 1000.0 << " miliseconds" << std::endl;
         // std::cerr << ">> Softmax (SecFloat) - End" << std::endl;
 
@@ -104,4 +96,11 @@ void softmax_secfloat(Tensor4D<u64> &in, Tensor4D<u64> &out, u64 scale, int llam
     }
     // printf("Scale=%lu, %lu\n", scale, LlamaConfig::bitlength);
     FloatToFix(in.d1*in.d2, outFloat.data, out.data, scale);
+    auto secfloat_comm_end = __get_comm();
+    auto secfloat_round_end = __iopack->get_rounds();
+    auto secfloat_end = std::chrono::high_resolution_clock::now();
+    auto eval_time = std::chrono::duration_cast<std::chrono::microseconds>(secfloat_end - secfloat_start).count();
+    evalMicroseconds += eval_time;
+    secFloatComm += (uint64_t)(secfloat_comm_end - secfloat_comm_start);
+    numRounds += (secfloat_round_end - secfloat_round_start);
 }

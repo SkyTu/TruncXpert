@@ -75,7 +75,6 @@ SOFTWARE.
 
 template <typename T>
 using pair = std::pair<T, T>;
-
 bool localTruncation = false;
 
 using namespace LlamaConfig;
@@ -260,6 +259,7 @@ void packed_reconstruct(int32_t size, GroupElement *arr, int bw)
     delete[] packedArr;
     delete[] packedTmp;
     numRounds += 1;
+    secFloatComm += int(psize * sizeof(GroupElement) / 8);
 }
 
 void reconstruct(int32_t size, GroupElement *arr, int bw)
@@ -296,6 +296,7 @@ void reconstruct(int32_t size, GroupElement *arr, int bw)
     }
     delete[] tmp;
     numRounds += 1;
+    secFloatComm += int(size * sizeof(GroupElement) / 8);
 }
 
 void serverReconstruct(int32_t size, GroupElement *arr, int bw)
@@ -316,6 +317,7 @@ void serverReconstruct(int32_t size, GroupElement *arr, int bw)
         delete[] tmp;
     }
     numRounds += 1;
+    secFloatComm += int(size * sizeof(GroupElement) / 8);
 }
 
 void serverToClient(int32_t size, GroupElement *arr, int bw)
@@ -330,6 +332,7 @@ void serverToClient(int32_t size, GroupElement *arr, int bw)
         peer->recv_batched_input(arr, size, bw);
     }
     numRounds += 1;
+    secFloatComm += int(size * sizeof(GroupElement) / 8);
 }
 
 void reconstructRT(int32_t size, GroupElement *arr, int bw)
@@ -650,7 +653,7 @@ void ars_threads_helper(int thread_idx, int32_t size, GroupElement *inArr, Group
 */
 void ARS(int32_t size, MASK_PAIR(GroupElement *inArr), MASK_PAIR(GroupElement *outArr), int32_t shift, bool doReconstruct)
 {
-    std::cerr << ">> Truncate" << (LlamaConfig::stochasticT ? " (stochastic)" : "") << " - Start" << std::endl;
+    // std::cerr << ">> Truncate" << (LlamaConfig::stochasticT ? " (stochastic)" : "") << " - Start" << std::endl;
     if (party == DEALER)
     {
         pair<ARSKeyPack> *keys = new pair<ARSKeyPack>[size];
@@ -711,22 +714,22 @@ void ARS(int32_t size, MASK_PAIR(GroupElement *inArr), MASK_PAIR(GroupElement *o
         auto end = std::chrono::high_resolution_clock::now();
         auto compute_time = std::chrono::duration_cast<std::chrono::microseconds>(mid - start).count();
         auto reconstruct_time = std::chrono::duration_cast<std::chrono::microseconds>(end - mid).count();
-        std::cerr << "   Key Read Time = " << keyread_time_taken << " milliseconds\n";
-        std::cerr << "   Compute Time = " << compute_time / 1000.0 << " milliseconds\n";
-        std::cerr << "   Reconstruct Time = " << reconstruct_time / 1000.0 << " milliseconds\n";
-        std::cerr << "   Online Time = " << (reconstruct_time + compute_time) / 1000.0 << " milliseconds\n";
-        std::cerr << "   Online Comm = " << (onlineComm1 - onlineComm0) << " bytes\n";
+        // std::cerr << "   Key Read Time = " << keyread_time_taken << " milliseconds\n";
+        // std::cerr << "   Compute Time = " << compute_time / 1000.0 << " milliseconds\n";
+        // std::cerr << "   Reconstruct Time = " << reconstruct_time / 1000.0 << " milliseconds\n";
+        // std::cerr << "   Online Time = " << (reconstruct_time + compute_time) / 1000.0 << " milliseconds\n";
+        // std::cerr << "   Online Comm = " << (onlineComm1 - onlineComm0) << " bytes\n";
 
         evalMicroseconds += (reconstruct_time + compute_time);
         arsEvalMicroseconds += (reconstruct_time + compute_time);
         delete[] keys;
     }
-    std::cerr << ">> Truncate - End" << std::endl;
+    // std::cerr << ">> Truncate - End" << std::endl;
 }
 
 void ScaleDown(int32_t size, MASK_PAIR(GroupElement *inArr), int32_t sf, bool doReconstruct)
 {
-    std::cerr << ">> ScaleDown - Start " << std::endl;
+    // std::cerr << ">> ScaleDown - Start " << std::endl;
     if (localTruncation)
     {
         uint64_t m = ((1L << sf) - 1) << (bitlength - sf);
@@ -763,7 +766,7 @@ void ScaleDown(int32_t size, MASK_PAIR(GroupElement *inArr), int32_t sf, bool do
     {
         ARS(size, inArr, inArr_mask, inArr, inArr_mask, sf, doReconstruct);
     }
-    std::cerr << ">> ScaleDown - End " << std::endl;
+    // std::cerr << ">> ScaleDown - End " << std::endl;
 }
 
 inline void matmul2d_server_helper(int thread_idx, int s1, int s2, int s3, GroupElement *A, GroupElement *B, GroupElement *C, GroupElement *a, GroupElement *b, GroupElement *c)
@@ -1308,7 +1311,7 @@ void MaxPool(int32_t N, int32_t H, int32_t W, int32_t C, int32_t FH,
              int32_t strideW, int32_t N1, int32_t imgH, int32_t imgW,
              int32_t C1, MASK_PAIR(GroupElement *inArr), MASK_PAIR(GroupElement *outArr), GroupElement *oneHot, std::string prefix)
 {
-    std::cerr << ">> MaxPool - Start" << std::endl;
+    // std::cerr << ">> MaxPool - Start" << std::endl;
     int d1 = ((imgH - FH + (zPadHLeft + zPadHRight)) / strideH) + 1;
     int d2 = ((imgW - FW + (zPadWLeft + zPadWRight)) / strideW) + 1;
     always_assert(d1 == H);
@@ -1387,7 +1390,7 @@ void MaxPool(int32_t N, int32_t H, int32_t W, int32_t C, int32_t FH,
         auto dealer_end = std::chrono::high_resolution_clock::now();
         auto dealer_time = std::chrono::duration_cast<std::chrono::microseconds>(dealer_end - dealer_start).count() - dealer_file_read_time;
         dealerMicroseconds += dealer_time;
-        std::cerr << "   Dealer time: " << dealer_time / 1000.0 << " milliseconds" << std::endl;
+        // std::cerr << "   Dealer time: " << dealer_time / 1000.0 << " milliseconds" << std::endl;
     }
     else
     {
@@ -1527,7 +1530,7 @@ void MaxPool(int32_t N, int32_t H, int32_t W, int32_t C, int32_t FH,
         Llama::push_stats(stat);
     }
 
-    std::cerr << ">> MaxPool - End" << std::endl;
+    // std::cerr << ">> MaxPool - End" << std::endl;
 }
 
 void reluHelper(int thread_idx, int32_t size, GroupElement *inArr, GroupElement *outArr, GroupElement *drelu, ReluKeyPack *keys)
@@ -4589,7 +4592,7 @@ void r2_threads_helper_2(int thread_idx, int32_t size, GroupElement *inArr, Grou
 
 void Relu2Round(int32_t size, MASK_PAIR(GroupElement *inArr), MASK_PAIR(GroupElement *outArr), GroupElement *drelu_cache, int effectiveInputBw)
 {
-    std::cerr << ">> Relu2Round - Start" << std::endl;
+    // std::cerr << ">> Relu2Round - Start" << std::endl;
     GroupElement *tmp = make_array<GroupElement>(size);
     if (party == DEALER)
     {
@@ -4680,11 +4683,11 @@ void Relu2Round(int32_t size, MASK_PAIR(GroupElement *inArr), MASK_PAIR(GroupEle
         // std::cerr << "   Reconstruct time 1: " << time2 / 1000.0 << " milliseconds" << std::endl;
         // std::cerr << "   Compute time 2: " << time3 / 1000.0 << " milliseconds" << std::endl;
         // std::cerr << "   Reconstruct time 2: " << time4 / 1000.0 << " milliseconds" << std::endl;
-        std::cerr << "   Key Read Time = " << keyread_time_taken << " milliseconds" << std::endl;
-        std::cerr << "   Compute Time = " << (time1 + time3) / 1000.0 << " milliseconds" << std::endl;
-        std::cerr << "   Reconstruct Time = " << (time2 + time4) / 1000.0 << " milliseconds" << std::endl;
-        std::cerr << "   Online Time = " << time_taken / 1000.0 << " milliseconds" << std::endl;
-        std::cerr << "   Online Comm = " << (onlineComm1 - onlineComm0) << " bytes\n";
+        // std::cerr << "   Key Read Time = " << keyread_time_taken << " milliseconds" << std::endl;
+        // std::cerr << "   Compute Time = " << (time1 + time3) / 1000.0 << " milliseconds" << std::endl;
+        // std::cerr << "   Reconstruct Time = " << (time2 + time4) / 1000.0 << " milliseconds" << std::endl;
+        // std::cerr << "   Online Time = " << time_taken / 1000.0 << " milliseconds" << std::endl;
+        // std::cerr << "   Online Comm = " << (onlineComm1 - onlineComm0) << " bytes\n";
 
         for (int i = 0; i < size; ++i)
         {
@@ -4694,7 +4697,7 @@ void Relu2Round(int32_t size, MASK_PAIR(GroupElement *inArr), MASK_PAIR(GroupEle
     }
 
     delete[] tmp;
-    std::cerr << ">> Relu2Round - End" << std::endl;
+    // std::cerr << ">> Relu2Round - End" << std::endl;
 }
 
 void fixtofloat_threads_helper(int thread_idx, int32_t size, int scale, GroupElement *inp, GroupElement *out, GroupElement *pl, GroupElement *q,
@@ -4996,7 +4999,7 @@ void mult_threads_helper(int thread_idx, int32_t size, GroupElement *inArr, Grou
 void ElemWiseSecretSharedVectorMult(int32_t size, MASK_PAIR(GroupElement *inArr),
                                     MASK_PAIR(GroupElement *multArrVec), MASK_PAIR(GroupElement *outputArr))
 {
-    std::cerr << ">> ElemWise Mult - start" << std::endl;
+    // std::cerr << ">> ElemWise Mult - start" << std::endl;
     if (party == DEALER)
     {
         uint64_t dealer_toal_time = 0;
@@ -5052,28 +5055,28 @@ void ElemWiseSecretSharedVectorMult(int32_t size, MASK_PAIR(GroupElement *inArr)
         auto end = std::chrono::high_resolution_clock::now();
         auto compute_time = std::chrono::duration_cast<std::chrono::microseconds>(mid - start).count();
         auto reconstruct_time = std::chrono::duration_cast<std::chrono::microseconds>(end - mid).count();
-        std::cerr << "   Key Read Time = " << keyread_time_taken << " milliseconds\n";
-        std::cerr << "   Compute Time = " << compute_time / 1000.0 << " milliseconds\n";
-        std::cerr << "   Reconstruct Time = " << reconstruct_time / 1000.0 << " milliseconds\n";
-        std::cerr << "   Online Time = " << (reconstruct_time + compute_time) / 1000.0 << " milliseconds\n";
+        // std::cerr << "   Key Read Time = " << keyread_time_taken << " milliseconds\n";
+        // std::cerr << "   Compute Time = " << compute_time / 1000.0 << " milliseconds\n";
+        // std::cerr << "   Reconstruct Time = " << reconstruct_time / 1000.0 << " milliseconds\n";
+        // std::cerr << "   Online Time = " << (reconstruct_time + compute_time) / 1000.0 << " milliseconds\n";
         evalMicroseconds += (reconstruct_time + compute_time);
         multEvalMicroseconds += (reconstruct_time + compute_time);
         delete[] keys;
     }
-    std::cerr << ">> ElemWise Mult - end" << std::endl;
+    // std::cerr << ">> ElemWise Mult - end" << std::endl;
 }
 
 void WingSoftmax(int32_t s1, int32_t s2, MASK_PAIR(GroupElement *inArr), MASK_PAIR(GroupElement *outArr), int32_t sf, int extra_shift)
 {
     // s1 = batch size
     // s2 = number of classes
-    std::cerr << ">> Softmax - start" << " s1 = " << s1 << " s2 = " << s2 << " sf = " << sf << std::endl;
+    // std::cerr << ">> Softmax - start" << " s1 = " << s1 << " s2 = " << s2 << " sf = " << sf << std::endl;
     GroupElement *max = make_array<GroupElement>(s1);
     // step 1 - calculate max for each image in batch
     GroupElement *oneHot = make_array<GroupElement>(s1 * (s2 - 1));
     MaxPool(s1, 1, 1, 1, s2, 1, 0, 0, 0, 0, 1, 1, s1, s2, 1, 1, MASK_PAIR(inArr), max, max, oneHot);
     delete[] oneHot; // TODO: support passing oneHot as nullptr
-    std::cerr << "bitlength:" << bitlength << std::endl;
+    // std::cerr << "bitlength:" << bitlength << std::endl;
     // step 2 - subtract max from each element in each image in batch and add 2
     if (party == DEALER)
     {
@@ -5165,8 +5168,6 @@ void WingSoftmax(int32_t s1, int32_t s2, MASK_PAIR(GroupElement *inArr), MASK_PA
     // 截断以后出去要减去label的share，这里不reveal
     ScaleDown(s1 * s2, MASK_PAIR(outArr), sf + logs1 - extra_shift, false);
     
-    std::cerr << ">> Softmax - end" << std::endl;
-
     delete[] expandedDenominator;
 }
 

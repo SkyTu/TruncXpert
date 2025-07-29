@@ -29,6 +29,7 @@
 #include <atomic>
 #include "gpu_stats.h"
 
+extern int wan_time;
 extern size_t OneGB;
 // extern u8 *h_bufA0, *h_bufA1;
 // extern size_t commBufSize;

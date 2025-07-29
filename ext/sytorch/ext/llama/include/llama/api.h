@@ -45,7 +45,6 @@ SOFTWARE.
 #include <llama/group_element.h>
 
 #define MASK_PAIR(x) x, x##_mask
-
 namespace llama {
     void start();
     void end();

@@ -48,6 +48,7 @@
 #include <sytorch/backend/llama_base.h>
 
 #include "cuda_runtime_api.h"
+#include "utils/wan_config.h"
 
 u64 *gpuSoftmax(int batchSz, int numClasses, int party, SigmaPeer *peer, u64 *d_I, u64 *labels, bool secfloat, LlamaBase<u64> *llama)
 {
@@ -86,23 +87,23 @@ void trainModel(dcf::orca::GPUModel<u64> *m, u8 **keyBuf, int party, SigmaPeer *
     u64 *d_O;
     for (int i = 0; i < m->layers.size(); i++)
     {
-        std::cout << "Read Key Layer " << i << " begin" << std::endl;
+        // std::cout << "Read Key Layer " << i << " begin" << std::endl;
         m->layers[i]->readForwardKey(keyBuf);
-        std::cout << "Layer " << i << " begin" << std::endl;
+        // std::cout << "Layer " << i << " begin" << std::endl;
         d_O = m->layers[i]->forward(peer, party, d_I, g);
-        std::cout << "Layer " << i << " done" << std::endl;
+        // std::cout << "Layer " << i << " done" << std::endl;
         if (d_O != d_I)
             gpuFree(d_I);
         d_I = d_O;
     }
     checkCudaErrors(cudaDeviceSynchronize());
     d_I = gpuSoftmax(m->batchSz, m->classes, party, peer, d_I, labels, secfloat, llama);
-    std::cout << "Softmax finished" << std::endl;
+    // std::cout << "Softmax finished" << std::endl;
     for (int i = m->layers.size() - 1; i >= 0; i--)
     {
         m->layers[i]->readBackwardKey(keyBuf, epoch);
         d_I = m->layers[i]->backward(peer, party, d_I, g, epoch);
-        std::cout << "Layer " << i << " backward done" << std::endl;
+        // std::cout << "Layer " << i << " backward done" << std::endl;
     }
 }
 
@@ -114,11 +115,11 @@ void trainModelPerf(dcf::orca::GPUModel<u64> *m, u8 **keyBuf, int party, SigmaPe
     u64 *d_O;
     for (int i = 0; i < m->layers.size(); i++)
     {
-        std::cout << "Read Key Layer " << i << " begin" << std::endl;
+        // std::cout << "Read Key Layer " << i << " begin" << std::endl;
         m->layers[i]->readForwardKey(keyBuf);
-        std::cout << "Layer " << i << " begin" << std::endl;
+        // std::cout << "Layer " << i << " begin" << std::endl;
         d_O = m->layers[i]->forward(peer, party, d_I, g);
-        std::cout << "Layer " << i << " done" << std::endl;
+        // std::cout << "Layer " << i << " done" << std::endl;
         if (d_O != d_I)
             gpuFree(d_I);
         d_I = d_O;
@@ -128,12 +129,12 @@ void trainModelPerf(dcf::orca::GPUModel<u64> *m, u8 **keyBuf, int party, SigmaPe
     d_I = gpuSoftmax(m->batchSz, m->classes, party, peer, d_I, labels, secfloat, llama);
     auto computeEnd = std::chrono::high_resolution_clock::now();
     float_softmax_time += std::chrono::duration_cast<std::chrono::milliseconds>(computeEnd - computeStart).count();
-    std::cout << "Softmax finished" << std::endl;
+    // std::cout << "Softmax finished" << std::endl;
     for (int i = m->layers.size() - 1; i >= 0; i--)
     {
         m->layers[i]->readBackwardKey(keyBuf, epoch);
         d_I = m->layers[i]->backward(peer, party, d_I, g, epoch);
-        std::cout << "Layer " << i << " backward done" << std::endl;
+        // std::cout << "Layer " << i << " backward done" << std::endl;
     }
 }
 
@@ -223,7 +224,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
             // Open the key file for reading
             // uncomment for end to end run
             peer->sync();
-            auto startComm = peer->bytesSent() + peer->bytesReceived();
+            auto startComm = peer->bytesReceived();
             auto start = std::chrono::high_resolution_clock::now();
             for (int j = 0; j < blockSz; j++)
             {
@@ -242,7 +243,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             onlineTime += elapsed;
             printf("Online time (ms): %lu\n", elapsed.count());
-            auto endComm = peer->bytesSent() + peer->bytesReceived();
+            auto endComm = peer->bytesReceived();
             commBytes += (endComm - startComm);
             std::pair<double, double> res;
             m->dumpWeights(weightsDir + "masked_weights_" + std::to_string(party) + "_" + std::to_string(l) + "_" + std::to_string(k) + "_" + std::to_string(blockSz-1) + ".dat");
@@ -270,7 +271,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
     int iterations = epochs * blocks * blockSz;
     commBytes += secFloatComm;
     std::ofstream stats(trainingDir + expName + ".txt");
-    auto statsString = "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(secFloatComm);
+    auto statsString = "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(inputOnlineComm + secFloatComm);
 
     auto avgKeyReadTime = (double)keyReadTime / (double)iterations;
     auto avgComputeTime = (double)computeTime.count() / (double)iterations;
@@ -289,6 +290,7 @@ void evaluatorE2E(std::string modelName, std::string dataset, int party, std::st
 
 void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int party, std::string ip, std::string weightsFile, bool floatWeights, int epochs, int blocks, int blockSz, int batchSz, int H, int W, int C, bool secfloat, bool momentum, std::string keyDir, int device = 0)
 {
+    WanParameter wanParams;
     AESGlobalContext g;
     initAESContext(&g);    
     initGPURandomness();
@@ -369,7 +371,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
         for (int k = 0; k < blocks; k++)
         {            
             peer->sync();
-            auto startComm = peer->bytesSent() + peer->bytesReceived();
+            auto startComm = peer->bytesReceived();
             auto start = std::chrono::high_resolution_clock::now();
             lseek(fd, 0, SEEK_SET);
             for (int j = 0; j < blockSz; j++)
@@ -389,7 +391,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             onlineTime += elapsed;
             printf("Online time (ms): %lu\n", elapsed.count());
-            auto endComm = peer->bytesSent() + peer->bytesReceived();
+            auto endComm = peer->bytesReceived();
             commBytes += (endComm - startComm);
             std::pair<double, double> res;
             m->dumpWeights(weightsDir + "masked_weights_" + std::to_string(party) + "_" + std::to_string(l) + "_" + std::to_string(k) + "_" + std::to_string(blockSz-1) + ".dat");
@@ -448,15 +450,21 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
 
     LlamaConfig::peer->close();
     int iterations = epochs * blocks * blockSz;
+    commBytes += inputOnlineComm;
     commBytes += secFloatComm;
+    
+    // add the wan_time of softmax
+    wan_time += numRounds * wanParams.rtt;
+    wan_time += (inputOnlineComm + secFloatComm) / (wanParams.comm_bytes_per_ms);
+    
     std::ofstream stats(trainingDir + expName + ".txt");
-    auto statsString = "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(secFloatComm);
-
+    auto statsString = "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(inputOnlineComm + secFloatComm);
+    statsString += "\nWan extra time taken (ms)" + std::to_string(wan_time);
     auto avgKeyReadTime = (double)keyReadTime / (double)iterations;
     auto avgComputeTime = (double)computeTime.count() / (double)iterations;
-
     double commPerIt = (double)commBytes / (double)iterations;
-    statsString += "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTime);
+    auto wan_extra_time = (double)wan_time / (double)iterations;
+    statsString += "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTime) + "\nAvg wan extra time (ms)" + std::to_string(wan_extra_time);
     statsString += "\nComm per iteration (B): " + std::to_string(commPerIt);
     stats << statsString;
     stats.close();
@@ -469,6 +477,7 @@ void evaluatorE2EFakeOffline(std::string modelName, std::string dataset, int par
 
 void evaluatorPerf(std::string modelName, std::string dataset, int party, std::string ip, int iterations, int batchSz, int H, int W, int C, bool secfloat, bool momentum, std::string keyDir)
 {
+    WanParameter wanParams;
     AESGlobalContext g;
     initAESContext(&g);
     initGPUMemPool();
@@ -516,7 +525,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
     size_t commBytes = 0;
     int fd = openForReading(keyFile);
     auto start = std::chrono::high_resolution_clock::now();
-    auto startComm = peer->bytesSent() + peer->bytesReceived();
+    auto startComm = peer->bytesReceived();
     int float_softmax_time = 0;
     for (int j = 0; j < iterations; j++)
     {
@@ -531,27 +540,38 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
     auto end = std::chrono::high_resolution_clock::now();
     onlineTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     printf("Online time (ms): %lu\n", onlineTime.count());
-    auto endComm = peer->bytesSent() + peer->bytesReceived();
+    auto endComm = peer->bytesReceived();
     commBytes += (endComm - startComm);
     close(fd);
+
+    // add the online comm of softmax
+    commBytes += inputOnlineComm;
     commBytes += secFloatComm;
+    
+    std::cout << "numRounds: " << numRounds << std::endl;
+    std::cout << "inputOnlineComm: " << inputOnlineComm << std::endl;
+    // add the wan_time of softmax
+    wan_time += numRounds * wanParams.rtt;
+    wan_time += (inputOnlineComm + secFloatComm) / (wanParams.comm_bytes_per_ms);
     LlamaConfig::peer->close();
     std::ofstream stats(trainingDir + modelName + ".txt");
     auto statsString = "\n" + modelName + "\n";
-    statsString += "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(secFloatComm);
-    statsString += "FLoat SoftMax time take (ms): " + std::to_string(float_softmax_time) + "\n";
+    statsString += "Total time taken (ms): " + std::to_string(onlineTime.count()) + "\nTotal bytes communicated: " + std::to_string(commBytes) + "\nSecfloat softmax bytes: " + std::to_string(inputOnlineComm + secFloatComm);
+    statsString += "\nWan extra time taken (ms)" + std::to_string(wan_time);
+    statsString += "\nFLoat SoftMax time take (ms): " + std::to_string(float_softmax_time) + "\n";
     statsString += "\nIterations: " + std::to_string(iterations) + "\n";
     auto totTimeByIt = (double)onlineTime.count() / (double)(iterations - 1);
     auto avgKeyReadTime = (double)keyReadTime / (double)iterations;
     auto avgComputeTIme = (double)computeTime.count() / (double)iterations;
+    auto wan_extra_time = (double)wan_time / (double)iterations;
     int truncateComm = 0;
     for (int i = 0; i < m->layers.size(); i++)
     {
         truncateComm += m->layers[i]->s.truncate_comm_bytes;
     }
     double commPerIt = (double)commBytes / (double)iterations;
-    statsString += "\nTotal time / iterations (ms): " + std::to_string(totTimeByIt) + "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTIme);
-    statsString += "\nComm per iteration (B): " + std::to_string(commPerIt) + "\n";
+    statsString += "\nTotal time / iterations (ms): " + std::to_string(totTimeByIt) + "\nAvg key read time (ms): " + std::to_string(avgKeyReadTime) + "\nAvg compute time (ms): " + std::to_string(avgComputeTIme) + "\nAvg wan extra time (ms): " + std::to_string(wan_extra_time);
+    statsString += "\nComm per iteration (B): " + std::to_string(commPerIt) + "\n";  
     statsString += "\nTruncate Comm (B): " + std::to_string(truncateComm / 8 * (double)(iterations)) + "\nAvg Truncate Comm (B): " + std::to_string((double)truncateComm / 8);
     stats << statsString;
     stats.close();
@@ -562,7 +582,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
 }
 
 int global_device = 0;
-
+int wan_time = 0;
 int main(int argc, char *argv[])
 {
     sytorch_init();

@@ -132,9 +132,6 @@ namespace dcf
         {
             if (this->train)
                 moveIntoCPUMem((u8 *)this->mask_I, (u8 *)d_mask_I, convKey.mem_size_I, NULL);
-            for(int i = 0; i < 5; i++){
-                printf("Mask I[%d]=%lu\n", i, this->mask_I[i]);
-            }
             auto d_mask_C = gpuKeygenConv2D<T>(key_as_bytes, party, convKey, d_mask_I, mask_F, true);
             // bias has scale 2s
             if (useBias)
@@ -242,25 +239,25 @@ namespace dcf
             d_mask_I = (T *)moveToGPU((u8 *)convKey.I, convKey.mem_size_I, &(this->s));
             if (inputIsShares)
             {
-                for (int i = 0; i < 5; i++){
-                    printf("In forward propagation: Mask I[%d]=%lu\n", i, convKey.I[i]);
-                }
-                printf("In conv2d_layer, Input is shares!!!!\n");
+                // for (int i = 0; i < 5; i++){
+                //     printf("In forward propagation: Mask I[%d]=%lu\n", i, convKey.I[i]);
+                // }
+                // printf("In conv2d_layer, Input is shares!!!!\n");
                 gpuLinearComb(p.bin, p.size_I, d_I, T(1), d_I, T(1), d_mask_I);
                 peer->reconstructInPlace(d_I, p.bin, p.size_I, &(this->s));
             }
             if (this->train){
                 moveIntoCPUMem((u8 *)I, (u8 *)d_I, convKey.mem_size_I, &(this->s));
-                for (int i = 0; i < 5; i++){
-                    printf("In forward propagation: I[%d]=%lu\n", i, I[i]);
-                }
+                // for (int i = 0; i < 5; i++){
+                //     printf("In forward propagation: I[%d]=%lu\n", i, I[i]);
+                // }
             }
 
             d_F = (T *)moveToGPU((u8 *)F, convKey.mem_size_F, &(this->s));
             d_mask_F = (T *)moveToGPU((u8 *)convKey.F, convKey.mem_size_F, &(this->s));
-            for (int i = 0; i < 5; i++){
-                printf("In forward propagation: F[%d]=%lu, mask_F[%d]=%lu\n", i, F[i], i, convKey.F[i]);
-            }
+            // for (int i = 0; i < 5; i++){
+            //     printf("In forward propagation: F[%d]=%lu, mask_F[%d]=%lu\n", i, F[i], i, convKey.F[i]);
+            // }
             auto d_C = gpuConv2DBeaver(convKey, party, d_I, d_F, d_mask_I, d_mask_F, useBias && party == SERVER0 ? b : (T*) NULL, &(this->s), 0);
 
             // should not be freeing d_I who knows where else it is being used
@@ -278,7 +275,7 @@ namespace dcf
         template <typename T>
         T *Conv2DLayer<T>::backward(SigmaPeer *peer, int party, T *d_incomingGrad, AESGlobalContext *gaes, int epoch)
         {
-            printf("In Conv2DLayer backward\n");
+            // printf("In Conv2DLayer backward\n");
             this->checkIfTrain();
             auto d_mask_incomingGrad = (T *)moveToGPU((u8 *)convKeydF.I, convKeydF.mem_size_I, &(this->s));
             auto d_mask_I = (T *)moveToGPU((u8 *)convKey.I, convKey.mem_size_I, &(this->s));
