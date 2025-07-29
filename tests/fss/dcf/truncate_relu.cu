@@ -34,6 +34,7 @@
 
 using T = u64;
 int global_device = 0;
+double wan_time = 0;
 int main(int argc, char *argv[])
 {
     global_device = atoi(argv[4]);
@@ -92,6 +93,7 @@ int main(int argc, char *argv[])
     printf("Time taken=%lu micros\n", std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count());
     auto end_send = peer->peer->keyBuf->bytesSent;
     std::cout << "Send " << end_send - start_send << " bytes." << std::endl;
+    std::cout << "Wan time: " << wan_time << std::endl;
 
     auto d_drelu = temp.first;
     gpuFree(d_drelu);

@@ -155,7 +155,7 @@ void SigmaPeer::exchangeShares(u8 *to_send, size_t bytes, Stats *s)
         s->comm_time += std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
     }
     wan_time += wanParam.rtt;
-    wan_time += bytes / wanParam.comm_bytes_per_ms;
+    wan_time += (double)bytes / (double)wanParam.comm_bytes_per_ms;
     // std::cout << "Time to exchange shares in ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << " " << s->comm_time << std::endl;
     // return h_bufA1;
 }

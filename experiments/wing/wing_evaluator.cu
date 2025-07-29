@@ -586,7 +586,7 @@ void evaluatorPerf(std::string modelName, std::string dataset, int party, std::s
 }
 
 int global_device = 0;
-int wan_time = 0;
+double wan_time = 0;
 
 int main(int argc, char *argv[])
 {

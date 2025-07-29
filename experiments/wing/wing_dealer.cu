@@ -308,7 +308,7 @@ void dealerPerf(std::string modelName, int party, int iterations, int batchSz, i
 }
 
 int global_device = 0;
-int wan_time = 0;
+double wan_time = 0;
 int main(int argc, char *argv[])
 {
     int party = atoi(argv[1]);

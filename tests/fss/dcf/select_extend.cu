@@ -35,6 +35,7 @@
 
 using T = u64;
 int global_device = 0;
+double wan_time = 0;
 int main(int argc, char *argv[]) {
     
     int party = atoi(argv[1]);
@@ -135,6 +136,7 @@ int main(int argc, char *argv[]) {
     printf("Time taken=%lu micros\n", std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count());
     auto end_send = peer->peer->keyBuf->bytesSent;
     std::cout << "Send " << end_send - start_send << " bytes." << std::endl;
+    std::cout << "Wan time: " << wan_time << std::endl;
 
     peer->reconstructInPlace((u64*)d_selectOutput, bin, N, NULL);
     auto h_O = (T*)moveToCPU((u8*) d_selectOutput, N * sizeof(T), NULL);

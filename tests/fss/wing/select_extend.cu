@@ -11,16 +11,17 @@
 
 #include "fss/wing/gpu_truncate.h"
 #include "fss/wing/gpu_relu.h"
-
+#include "utils/wan_config.h"
 using T = u64;
 
 inline T cpuMsb(T x, int bin){
     return ((x >> (bin - 1)) & T(1));
 }
-
+double wan_time = 0;
 int global_device = 0;
 
 int main(int argc, char *argv[]) {
+    WanParameter wanParams;
     int party = atoi(argv[1]);
     auto peer = new GpuPeer(true);
     peer->connect(party, argv[2]);
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]) {
     auto d_dReluMask = dpf::gpuKeyGenDRelu(&curPtr, party, bin-shift, N, d_truncateMask, &g);
     auto relu_keysize = curPtr - tmpPtr;
     tmpPtr = curPtr;
-    auto d_outputMask = wing::gpuKeyGenSelectExt(&curPtr, party, bin-shift, bout, N, d_dReluMask, d_truncateMask);
+    auto d_outputMask = gpuKeyGenSelectExt(&curPtr, party, bin-shift, bout, N, d_dReluMask, d_truncateMask);
     auto selectExt_keysize = curPtr - tmpPtr;
     auto relumask = new u8[N];
     relumask = (u8 *)moveToCPU((u8 *)d_dReluMask, N * sizeof(u8), NULL);
@@ -77,7 +78,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Reading key\n";
     auto k =  wing::readGPUTruncateKey<T>(t, &curPtr);
     auto k1 = dpf::readGPUDReluKey(&curPtr);
-    auto k2 = wing::readGPUSelectExtKey<T>(&curPtr, N);
+    auto k2 = readGPUSelectExtKey<T>(&curPtr, N);
 
     // The comparison result are calculated during the forward propagation
     // The backward propagation process. When the next layer is ReLU, we can replace the truncate + select with truncate reduce + select extend.
@@ -94,6 +95,8 @@ int main(int argc, char *argv[]) {
     auto d_dcf = dpf::gpuDcf<T, 1, dpf::dReluPrologue<0>, dpf::dReluEpilogue<0, false>>(k1.dpfKey, party, d_X_share, &g, (Stats*) NULL, &h_mask);
     peer->reconstructInPlace(d_dcf, 1, N, (Stats*) NULL); 
     
+    auto dcf_send_bytes = peer->peer->keyBuf->bytesSent - end_send;
+
     start_send = peer->peer->keyBuf->bytesSent;
     start = std::chrono::high_resolution_clock::now();
     auto d_relu = wing::gpuReluZeroExtMux(party, bin-shift, bout, N, k2, d_X_share, d_dcf, (Stats *)NULL);
@@ -103,7 +106,7 @@ int main(int argc, char *argv[]) {
     end_send = peer->peer->keyBuf->bytesSent;
     send_bytes = send_bytes + end_send - start_send;
     std::cout << "Send " << send_bytes << " bytes." << std::endl;
-
+    std::cout << "Wan time: " << wan_time - wanParams.rtt - dcf_send_bytes/wanParams.comm_bytes_per_ms << std::endl;
     peer->reconstructInPlace((u64*)d_relu, bout, N, NULL);
     auto h_relu = (T *)moveToCPU((u8 *)d_relu, N * sizeof(T), (Stats *)NULL);
     gpuFree(d_relu);

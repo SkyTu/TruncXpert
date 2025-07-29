@@ -16,7 +16,7 @@ using T = u64;
 inline T cpuMsb(T x, int bin){
     return ((x >> (bin - 1)) & T(1));
 }
-
+double wan_time = 0;
 int global_device = 0;
 
 int main(int argc, char *argv[]) {
@@ -73,6 +73,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Time taken" << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << "micros\n";
     auto end_send = peer->peer->keyBuf->bytesSent;
     std::cout << "Send " << end_send - start_send << " bytes." << std::endl;
+    std::cout << "Wan time: " << wan_time << std::endl;
 
     auto h_TRe = new T[N];
     peer->reconstructInPlace((u64*)d_X_share, bout, N, NULL);

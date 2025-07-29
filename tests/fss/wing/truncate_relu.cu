@@ -17,7 +17,7 @@ using T = u64;
 inline T cpuMsb(T x, int bin){
     return ((x >> (bin - 1)) & T(1));
 }
-
+double wan_time = 0;
 int global_device = 0;
 
 int main(int argc, char *argv[]) {
@@ -82,6 +82,7 @@ int main(int argc, char *argv[]) {
     printf("Time taken=%lu micros\n", std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count());
     auto end_send = peer->peer->keyBuf->bytesSent;
     std::cout << "Send " << end_send - start_send << " bytes." << std::endl;
+    std::cout << "Wan time: " << wan_time << std::endl;
 
     auto d_drelu = temp.first;
     gpuFree(d_drelu);
