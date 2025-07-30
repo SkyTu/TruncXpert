@@ -375,6 +375,12 @@ int main(int argc, char *argv[])
         // 这里设置float softmax是为了更好的减去通信开销，计算pattern
         dealerPerf("Pattern1", party, iterations, batchSz, 28, 28, 1, true, true, keyDir, 300);
     }
+    else if (experiment.compare("Pattern3") == 0){
+        int iterations = 11;
+        int batchSz = 128;
+        // 这里设置float softmax是为了更好的减去通信开销，计算pattern
+        dealerPerf("Pattern3", party, iterations, batchSz, 28, 28, 1, true, true, keyDir, 300);
+    }
     else if (experiment.compare("Pattern2") == 0)
     {
         int iterations = 11;

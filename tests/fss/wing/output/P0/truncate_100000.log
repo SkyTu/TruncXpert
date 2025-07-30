@@ -4,7 +4,7 @@ port is 42006
 Not setting socket priority!
 Key size=1600028
 Reading key
-Time taken78micros
+Time taken252034micros
 Send 500000 bytes.
-Wan time: 115.383
+Wan time: 115.383 ms
 Verify!

@@ -3,7 +3,7 @@ Not setting socket priority!
 Begin generation
 Key size=40000016
 Reading key
-Time taken=5 millis
+Time taken=5949 millis
 Send 5000000 bytes.
-Wan time: 974.68
+Wan time: 974.68ms
 Begin Verification

@@ -70,10 +70,10 @@ int main(int argc, char *argv[]) {
     wing::gpuTruncate(bin, bout, t, k, shift, peer, party, N, d_X_share, &g, S, false);
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = end - start;
-    std::cout << "Time taken" << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << "micros\n";
+    std::cout << "Time taken" << std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count() << "micros\n";
     auto end_send = peer->peer->keyBuf->bytesSent;
     std::cout << "Send " << end_send - start_send << " bytes." << std::endl;
-    std::cout << "Wan time: " << wan_time << std::endl;
+    std::cout << "Wan time: "  << wan_time << " ms" << std::endl;
 
     auto h_TRe = new T[N];
     peer->reconstructInPlace((u64*)d_X_share, bout, N, NULL);

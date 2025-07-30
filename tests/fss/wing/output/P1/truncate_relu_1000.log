@@ -7,9 +7,9 @@ Begin GPU DCF for relu zero extension
 Finish GPU DCF for relu zero extension
 Begin GPU Relu Zero Extension Mux
 Finish GPU Relu Zero Extension Mux
-Time taken=34 micros
+Time taken=1401 micros
 Send 5128 bytes.
-Wan time: 40.9783
+Wan time: 40.9783 ms
 0: x is 4208379708624379122, output is 250838977613, expected is 250838977612
 1: x is -4152561144631593952, output is 0, expected is 0
 2: x is 4502254890599794863, output is 268355303442, expected is 268355303442

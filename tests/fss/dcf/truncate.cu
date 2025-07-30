@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     printf("Time taken=%lu micros\n", std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count());
     auto end_send = peer->peer->keyBuf->bytesSent;
     std::cout << "Send " << end_send - start_send << " bytes." << std::endl;
-    std::cout << "Wan time: " << wan_time << std::endl;
+    std::cout << "Wan time: "  << wan_time << " ms" << std::endl;
     peer->reconstructInPlace((u64*)d_X_share, bin, N, NULL);
     auto h_O = (T*) moveToCPU((u8*) d_X_share, N * sizeof(T), NULL);
     // 计算结果是存在d_mask_X的
