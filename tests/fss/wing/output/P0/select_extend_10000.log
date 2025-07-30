@@ -1,0 +1,11 @@
+Allocating 5368709120 bytes of memory for comm bufs
+port is 42003
+port is 42006
+Not setting socket priority!
+Begin generation
+Key size=400016
+Reading key
+Time taken=70 millis
+Send 50000 bytes.
+Wan time: 29.7772
+Begin Verification

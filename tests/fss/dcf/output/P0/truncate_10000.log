@@ -1,0 +1,8 @@
+Allocating 5368709120 bytes of memory for comm bufs
+port is 42003
+port is 42006
+Not setting socket priority!
+Key size=9102684
+Time taken=93395 micros
+Send 132504 bytes.
+Wan time: 105.277

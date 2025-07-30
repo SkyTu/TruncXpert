@@ -91,6 +91,36 @@ public:
 };
 
 template <typename T>
+class CNNAvgPattern : public SytorchModule<T>
+{
+    Conv2D<T> *conv1;
+    ReLU<T> *relu1;
+    AvgPool2D<T> *maxpool1;
+    Flatten<T> *flatten1;
+    FC<T> *fc1;
+
+public:
+    CNNAvgPattern()
+    {
+        conv1 = new Conv2D<T>(1, 8, 5, 0, 1, true);
+        relu1 = new ReLU<T>();
+        maxpool1 = new AvgPool2D<T>(2, 0, 2);
+        flatten1 = new Flatten<T>();
+        fc1 = new FC<T>(1152, 10, true);
+    }
+
+    Tensor<T> &_forward(Tensor<T> &input)
+    {
+        auto &var1 = conv1->forward(input);
+        auto &var2 = relu1->forward(var1);
+        auto &var3 = maxpool1->forward(var2);
+        auto &var4 = flatten1->forward(var3);
+        auto &var5 = fc1->forward(var4);
+        return var5;
+    }
+};
+
+template <typename T>
 class CNN2 : public SytorchModule<T>
 {
     Conv2D<T> *conv1;
@@ -1223,6 +1253,9 @@ SytorchModule<T> *getCNN(std::string name)
     }
     else if (name.compare("Pattern2") == 0){
         m = new CNNPattern<T>();
+    }
+    else if (name.compare("Pattern3") == 0){
+        m = new CNNAvgPattern<T>();
     }
     else if (name.compare("CNN2") == 0)
     {

@@ -1,6 +1,6 @@
 CUDA_VERSION ?= $(value CUDA_VERSION)
 ifeq ($(CUDA_VERSION),)
-	CUDA_VERSION = 12.4
+	CUDA_VERSION = 11.7
 endif
 CUTLASS_PATH=./ext/cutlass
 SYTORCH_PATH=./ext/sytorch

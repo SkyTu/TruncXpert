@@ -17,11 +17,12 @@ SEAL
 *.dot
 *.csv
 *.out
-experiments/orca/datasets/
-experiments/orca/keys/
-experiments/orca/output/
-experiments/orca/weights/
-experiments/orca/figure/
+experiments/orca/keys/*
+experiments/orca/output/*
+experiments/orca/weights/*
+experiments/orca/figure/*
+experiments/wing/weights/*
+experiments/wing/keys/*
 *.tar.gz
 experiments/datasets/mnist/*
 */datasets/*
