@@ -104,7 +104,7 @@ public:
     {
         conv1 = new Conv2D<T>(1, 8, 5, 0, 1, true);
         relu1 = new ReLU<T>();
-        avgpool1 = new AvgPool2D<T>(2, 0, 2);
+        maxpool1 = new AvgPool2D<T>(2, 0, 2);
         flatten1 = new Flatten<T>();
         fc1 = new FC<T>(1152, 10, true);
     }
@@ -113,7 +113,7 @@ public:
     {
         auto &var1 = conv1->forward(input);
         auto &var2 = relu1->forward(var1);
-        auto &var3 = avgpool1->forward(var2);
+        auto &var3 = maxpool1->forward(var2);
         auto &var4 = flatten1->forward(var3);
         auto &var5 = fc1->forward(var4);
         return var5;

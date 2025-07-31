@@ -3,6 +3,6 @@ port is 42003
 port is 42006
 Not setting socket priority!
 Key size=910484
-Time taken=523493 micros
+Time taken=191827 micros
 Send 13256 bytes.
 Wan time: 82.5288 ms

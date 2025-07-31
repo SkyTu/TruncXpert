@@ -73,53 +73,6 @@ public:
         }
     }
 
-    void conv2D(u64 fh, u64 fw, u64 padding, u64 stride, u64 ci, u64 co, const Tensor4D<T> &input, const Tensor2D<T> &filter, bool useBias, const Tensor1D<T> &bias, Tensor4D<T> &output, bool isFirst)
-    {
-        auto comm_start = s.comm_time;
-        auto start = std::chrono::high_resolution_clock::now();
-        GPUConv2DKey<T> k;
-        k.p = {
-            bw, bw, (int)input.d1, (int)input.d2, (int)input.d3, (int)ci,
-            (int)fh, (int)fw, (int)co, (int)padding, (int)padding, (int)padding, (int)padding,
-            (int)stride, (int)stride, 0, 0, 0, 0, 0};
-        fillConv2DParams(&(k.p));
-        k.mem_size_I = k.p.size_I * sizeof(T);
-        k.mem_size_F = k.p.size_F * sizeof(T);
-        k.mem_size_O = k.p.size_O * sizeof(T);
-
-        k.I = (T *)keyBuf;
-        keyBuf += k.mem_size_I;
-        k.F = (T *)keyBuf;
-        keyBuf += k.mem_size_F;
-        k.O = (T *)keyBuf;
-        keyBuf += k.mem_size_O;
-
-        auto d_mask_I = (T *)moveToGPU((u8 *)k.I, k.mem_size_I, &s);
-        if (isFirst)
-        {
-            gpuLinearComb(bw, k.p.size_I, input.d_data, T(1), input.d_data, T(1), d_mask_I);
-            peer->reconstructInPlace(input.d_data, bw, k.p.size_I, &s);
-        }
-        // printf("Input=%lx\n", input.d_data);
-        auto d_F = (T *)moveToGPU((u8 *)filter.data, k.mem_size_F, &s);
-        // printf("filter=%lu\n", filter.data[k.p.size_F - 1]);
-        auto d_mask_F = (T *)moveToGPU((u8 *)k.F, k.mem_size_F, &s);
-        auto d_C = gpuConv2DBeaver<T>(k, party, input.d_data, d_F, d_mask_I, d_mask_F, useBias && party == SERVER0 ? bias.data : (T *)NULL, &s, 0);
-
-        gpuFree(d_F);
-        gpuFree(d_mask_I);
-        gpuFree(d_mask_F);
-        // printf("size O=%lu\n", k.p.size_O);
-        peer->reconstructInPlace(d_C, k.p.bout, k.p.size_O, &s);
-        output.d_data = d_C;
-
-        auto end = std::chrono::high_resolution_clock::now();
-        auto elapsed = end - start;
-        s.conv_time += std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-        auto comm_end = s.comm_time;
-        s.conv_comm_time += (comm_end - comm_start);
-    }
-
     void truncateForward(Tensor<T> &in, u64 shift, u8 mode = 0)
     {
         // printf("Truncate=%lu, %lu, %lu\n", mode, shift, size);

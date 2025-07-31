@@ -106,7 +106,7 @@ generate reluRes
 Finish Secret Share
 Begin Generation
 Key size=9502684
-Time taken=38305 micros
+Time taken=1780 micros
 Send 212504 bytes.
 Wan time: 160.778 ms
 0: x is 4208379708624379122, output is 250838977613, expected is 250838977612

@@ -2,7 +2,7 @@ Allocating 5368709120 bytes of memory for comm bufs
 Not setting socket priority!
 Key size=16000028
 Reading key
-Time taken3951micros
+Time taken3501micros
 Send 5000000 bytes.
 Wan time: 973.834 ms
 Verify!
